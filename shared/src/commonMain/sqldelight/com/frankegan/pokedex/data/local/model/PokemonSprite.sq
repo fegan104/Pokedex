@@ -1,0 +1,32 @@
+
+
+CREATE TABLE pokemonSprite (
+    pokemonId INTEGER AS Int PRIMARY KEY,
+    backDefault TEXT,
+    backShiny TEXT,
+    frontDefault TEXT,
+    frontShiny TEXT,
+    backFemale TEXT,
+    backShinyFemale TEXT,
+    frontFemale TEXT,
+    frontShinyFemale TEXT
+);
+
+selectByPokemonId:
+SELECT *
+FROM pokemonSprite
+WHERE pokemonId = ?;
+
+insert:
+INSERT INTO pokemonSprite(
+    pokemonId,
+    backDefault,
+    backShiny,
+    frontDefault,
+    frontShiny,
+    backFemale,
+    backShinyFemale,
+    frontFemale,
+    frontShinyFemale
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);

@@ -1,0 +1,57 @@
+
+
+
+
+
+
+CREATE TABLE pokemonSpecies (
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    colorName TEXT NOT NULL,
+    colorUrl TEXT NOT NULL,
+    generationName TEXT NOT NULL,
+    generationUrl TEXT NOT NULL
+);
+
+CREATE TABLE pokemonSpeciesFlavorText (
+    pokemonSpeciesId INTEGER AS Int NOT NULL,
+    flavorText TEXT NOT NULL,
+    versionName TEXT NOT NULL,
+    versionUrl TEXT NOT NULL,
+    languageName TEXT NOT NULL,
+    languageUrl TEXT NOT NULL,
+    FOREIGN KEY(pokemonSpeciesId) REFERENCES pokemonSpecies(id)
+);
+
+insertPokemonSpecies:
+INSERT INTO pokemonSpecies(
+      id,
+      name,
+      colorName,
+      colorUrl,
+      generationName,
+      generationUrl
+)
+VALUES (?, ?, ?, ?, ?, ?);
+
+insertFlavorText:
+INSERT INTO pokemonSpeciesFlavorText(
+      pokemonSpeciesId,
+      flavorText,
+      versionName,
+      versionUrl,
+      languageName,
+      languageUrl
+)
+VALUES (?, ?, ?, ?, ?, ?);
+
+selectSpeciesByPokemonId:
+SELECT *
+FROM pokemonSpecies
+WHERE id = ?
+LIMIT 1;
+
+selectFlavorTextByPokemonId:
+SELECT *
+FROM pokemonSpeciesFlavorText
+WHERE pokemonSpeciesId = ?;

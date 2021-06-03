@@ -1,0 +1,22 @@
+
+
+CREATE TABLE pokemonType (
+    pokemonId INTEGER AS Int PRIMARY KEY,
+    slot INTEGER AS Int NOT NULL,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL
+);
+
+selectByPokemonId:
+SELECT slot, name, url
+FROM pokemonType
+WHERE pokemonId = ?;
+
+insert:
+INSERT INTO pokemonType(
+    pokemonId,
+    slot,
+    name,
+    url
+)
+VALUES (?, ?, ?, ?);

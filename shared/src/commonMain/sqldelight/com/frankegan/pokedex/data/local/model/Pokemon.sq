@@ -1,0 +1,46 @@
+
+
+
+
+CREATE TABLE pokemon (
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    speciesName TEXT NOT NULL,
+    speciesUrl TEXT NOT NULL,
+    height INTEGER AS Int NOT NULL,
+    weight INTEGER AS Int NOT NULL
+);
+
+CREATE INDEX pokemon_name ON pokemon(name);
+
+selectAll:
+SELECT *
+FROM pokemon;
+
+selectByName:
+SELECT *
+FROM pokemon
+WHERE name = ?
+LIMIT 1;
+
+selectById:
+SELECT *
+FROM pokemon
+WHERE id = ?
+LIMIT 1;
+
+selectByIdBetween:
+SELECT *
+FROM pokemon
+WHERE id BETWEEN ? AND ?;
+
+insert:
+INSERT INTO pokemon(
+    id,
+    name,
+    speciesName,
+    speciesUrl,
+    height,
+    weight
+)
+VALUES (?, ?, ?, ?, ?, ?);
