@@ -13,6 +13,7 @@ version = "1.0"
 val coroutinesVersion = "1.4.2-native-mt"
 val serializationVersion = "1.0.0-RC"
 val ktorVersion = "1.4.0"
+val koinVersion = "3.0.2"
 val sqlDelightVersion: String by project
 
 kotlin {
@@ -42,6 +43,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+                implementation("io.insert-koin:koin-core:$koinVersion")
             }
         }
         val commonTest by getting {

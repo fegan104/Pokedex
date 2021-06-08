@@ -1,24 +1,13 @@
 package com.frankegan.pokedex.data
 
-import com.frankegan.pokedex.data.local.DatabaseDriverFactory
 import com.frankegan.pokedex.data.local.PokemonLocalDataSource
 import com.frankegan.pokedex.data.remote.PokemonRemoteDataSource
-import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
 
-class PokemonRepository(driverFactory: DatabaseDriverFactory): PokemonDataSource {
-
-    private val httpClient = HttpClient {
-        install(JsonFeature) {
-            val json = Json { ignoreUnknownKeys = true }
-            serializer = KotlinxSerializer(json)
-        }
-    }
-    private val remote: PokemonDataSource = PokemonRemoteDataSource(httpClient)
-    private val local: PokemonDataSource = PokemonLocalDataSource(driverFactory)
-
+class PokemonRepository(
+    private val remote: PokemonRemoteDataSource,
+    private val local: PokemonLocalDataSource
+) : PokemonDataSource, KoinComponent {
 
     override suspend fun getPokemonPagedResult(page: Int): Result<List<Pokemon>> {
         return local.getPokemonPagedResult(page).recoverCatching {
