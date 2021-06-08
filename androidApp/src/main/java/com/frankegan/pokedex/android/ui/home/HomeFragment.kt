@@ -8,9 +8,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import com.frankegan.pokedex.android.R
 import com.frankegan.pokedex.android.databinding.HomeFragmentBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
 
@@ -32,14 +39,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getPokemon().observe(viewLifecycleOwner) { pokemonResult ->
-            pokemonResult.fold(
-                onSuccess = { data -> adapter.addNextPage(data) },
-                onFailure = { err ->
-                    Log.e("HomeFragment", err.localizedMessage, err)
-                    Snackbar.make(binding.root, "❌ ${err.localizedMessage}", Snackbar.LENGTH_LONG).show()
-                }
-            )
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getPokemon().collectLatest { pokemonResult ->
+                adapter.submitData(pokemonResult)
+            }
         }
     }
 }

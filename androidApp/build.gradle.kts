@@ -11,6 +11,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
     implementation("androidx.fragment:fragment-ktx:1.3.4")
     implementation("io.coil-kt:coil:1.2.1")
+    implementation("androidx.paging:paging-runtime:3.0.0")
 }
 
 android {

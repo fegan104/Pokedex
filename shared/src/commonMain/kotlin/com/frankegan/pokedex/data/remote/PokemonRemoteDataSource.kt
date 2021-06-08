@@ -1,9 +1,9 @@
 package com.frankegan.pokedex.data.remote
 
 import com.frankegan.pokedex.data.NamedApiResourceList
-import com.frankegan.pokedex.data.PAGE_SIZE
 import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonDataSource
+import com.frankegan.pokedex.data.PokemonDataSource.Companion.PAGE_SIZE
 import com.frankegan.pokedex.data.PokemonSpecies
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get

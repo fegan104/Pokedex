@@ -1,7 +1,5 @@
 package com.frankegan.pokedex.data
 
-const val PAGE_SIZE = 20
-
 
 interface PokemonDataSource {
 
@@ -12,4 +10,8 @@ interface PokemonDataSource {
     suspend fun savePokemon(pokemon: Pokemon): Result<Pokemon>
 
     suspend fun savePokemonSpecies(species: PokemonSpecies): Result<PokemonSpecies>
+
+    companion object {
+        const val PAGE_SIZE = 20
+    }
 }

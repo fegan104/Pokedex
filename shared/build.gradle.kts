@@ -56,7 +56,18 @@ kotlin {
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
             }
         }
+        // Workaround for:
+        //
+        // The Kotlin source set androidAndroidTestRelease was configured but not added to any
+        // Kotlin compilation. You can add a source set to a target's compilation by connecting it
+        // with the compilation's default source set using 'dependsOn'.
+        // See https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#connecting-source-sets
+        //
+        // This workaround includes `dependsOn(androidAndroidTestRelease)` in the `androidTest` sourceSet.
+        val androidAndroidTestRelease by getting
+
         val androidTest by getting {
+            dependsOn(androidAndroidTestRelease)
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13.2")

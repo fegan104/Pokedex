@@ -1,9 +1,9 @@
 package com.frankegan.pokedex.data.local
 
 import com.frankegan.pokedex.data.NamedApiResource
-import com.frankegan.pokedex.data.PAGE_SIZE
 import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonDataSource
+import com.frankegan.pokedex.data.PokemonDataSource.Companion.PAGE_SIZE
 import com.frankegan.pokedex.data.PokemonSpecies
 import com.frankegan.pokedex.data.PokemonSpeciesFlavorText
 import com.frankegan.pokedex.data.PokemonSprites
@@ -60,8 +60,6 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
     }
 
     override suspend fun savePokemon(pokemon: Pokemon): Result<Pokemon> = runCatching {
-
-        println("Inserting ${pokemon.formattedNumber}")
 
         appDatabase.pokemonQueries.insert(
             id = pokemon.id,
