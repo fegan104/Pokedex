@@ -26,7 +26,7 @@ class PokemonPagerSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
         val currentPage = params.key ?: START_INDEX
-        val result = pokemonRepo.getPokemonPagedResult(currentPage)
+        val result = runCatching { pokemonRepo.getPokemonPage(currentPage) }
         return result.fold(
             onSuccess = { pokemon ->
                 LoadResult.Page(

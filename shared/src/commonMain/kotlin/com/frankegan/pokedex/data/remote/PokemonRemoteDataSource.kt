@@ -15,24 +15,28 @@ private const val ENDPOINT = "https://pokeapi.co/api/v2"
 
 class PokemonRemoteDataSource(private val httpClient: HttpClient) : PokemonDataSource {
 
-    override suspend fun getPokemonPagedResult(page: Int): Result<List<Pokemon>> = coroutineScope {
-        val pokemonLinks: NamedApiResourceList = httpClient.get("$ENDPOINT/pokemon/?limit=$PAGE_SIZE&offset=${page * PAGE_SIZE}")
+    /**
+     * TODO is there a more asynchronous way to handle this for Kotlin Native?
+     */
+    override suspend fun getPokemonPage(page: Int): List<Pokemon> = coroutineScope {
+        val pokemonLinks: NamedApiResourceList =
+            httpClient.get("$ENDPOINT/pokemon/?limit=$PAGE_SIZE&offset=${page * PAGE_SIZE}")
         val pokemon = pokemonLinks.results.map { result ->
-            async { httpClient.get<Pokemon>(result.url) }
+            httpClient.get<Pokemon>(result.url)
         }
 
-        runCatching { pokemon.awaitAll().sortedBy { it.id } }
+        pokemon.sortedBy { it.id }
     }
 
-    override suspend fun getPokemonSpecies(id: Int): Result<PokemonSpecies> {
-        return runCatching { httpClient.get("$ENDPOINT/pokemon-species/$id") }
+    override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
+        return httpClient.get("$ENDPOINT/pokemon-species/$id")
     }
 
-    override suspend fun savePokemon(pokemon: Pokemon): Result<Pokemon> = Result.failure(
-        Error("API endpoint is read-only")
-    )
+    override suspend fun savePokemon(pokemon: Pokemon): Pokemon {
+        throw Error("API endpoint is read-only")
+    }
 
-    override suspend fun savePokemonSpecies(species: PokemonSpecies): Result<PokemonSpecies> = Result.failure(
-        Error("API endpoint is read-only")
-    )
+    override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies {
+        throw Error("API endpoint is read-only")
+    }
 }

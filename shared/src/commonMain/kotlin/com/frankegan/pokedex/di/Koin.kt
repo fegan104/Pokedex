@@ -30,5 +30,5 @@ val commonModule = module {
     }
     single { PokemonLocalDataSource(get()) }
     single { PokemonRemoteDataSource(get()) }
-    single { PokemonRepository(get(), get()) }
+    single { PokemonRepository() }
 }

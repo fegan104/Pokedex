@@ -13,9 +13,13 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
 
     private val appDatabase by lazy { AppDatabase(databaseDriverFactory.createDriver()) }
 
-    override suspend fun getPokemonPagedResult(page: Int): Result<List<Pokemon>> = runCatching {
-        val pokemonQuery =
-            appDatabase.pokemonQueries.selectByIdBetween(page * PAGE_SIZE + 1, (page + 1) * PAGE_SIZE) { id, name, speciesName, speciesUrl, height, weight ->
+    override suspend fun getPokemonPage(page: Int): List<Pokemon> {
+        val pokemonQuery = appDatabase
+            .pokemonQueries
+            .selectByIdBetween(
+                page * PAGE_SIZE + 1,
+                (page + 1) * PAGE_SIZE
+            ) { id, name, speciesName, speciesUrl, height, weight ->
 
                 val types = queryTypes(id)
 
@@ -32,12 +36,13 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
                 )
             }
 
-        pokemonQuery.executeAsList().throwIfEmpty()
+        return pokemonQuery.executeAsList().throwIfEmpty()
     }
 
-    override suspend fun getPokemonSpecies(id: Int): Result<PokemonSpecies> {
-        val pokemonSpeciesQuery =
-            appDatabase.pokemonSpeciesQueries.selectSpeciesByPokemonId(id) { id, name, colorName, colorUrl, generationName, generationUrl ->
+    override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
+        val pokemonSpeciesQuery = appDatabase
+            .pokemonSpeciesQueries
+            .selectSpeciesByPokemonId(id) { _, name, colorName, colorUrl, generationName, generationUrl ->
                 val flavorTextEntries =
                     appDatabase.pokemonSpeciesQueries.selectFlavorTextByPokemonId(id) { _, flavorText, versionName, versionUrl, languageName, languageUrl ->
                         PokemonSpeciesFlavorText(
@@ -56,10 +61,10 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
                 )
             }
 
-        return runCatching { pokemonSpeciesQuery.executeAsOne() }
+        return pokemonSpeciesQuery.executeAsOne()
     }
 
-    override suspend fun savePokemon(pokemon: Pokemon): Result<Pokemon> = runCatching {
+    override suspend fun savePokemon(pokemon: Pokemon): Pokemon {
 
         appDatabase.pokemonQueries.insert(
             id = pokemon.id,
@@ -91,10 +96,10 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
             )
         }
 
-        pokemon
+        return pokemon
     }
 
-    override suspend fun savePokemonSpecies(species: PokemonSpecies): Result<PokemonSpecies> = runCatching {
+    override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies {
         appDatabase.pokemonSpeciesQueries.insertPokemonSpecies(
             id = species.id,
             name = species.name,
@@ -104,12 +109,21 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
             generationUrl = species.generation.url
         )
 
-        species
+        return species
     }
 
     private fun querySprites(pokemonId: Int): PokemonSprites {
         return appDatabase.pokemonSpriteQueries.selectByPokemonId(pokemonId) { _, backDefault, backShiny, frontDefault, frontShiny, backFemale, backShinyFemale, frontFemale, frontShinyFemale ->
-            PokemonSprites(backDefault, backShiny, frontDefault, frontShiny, backFemale, backShinyFemale, frontFemale, frontShinyFemale)
+            PokemonSprites(
+                backDefault,
+                backShiny,
+                frontDefault,
+                frontShiny,
+                backFemale,
+                backShinyFemale,
+                frontFemale,
+                frontShinyFemale
+            )
         }.executeAsOne()
     }
 

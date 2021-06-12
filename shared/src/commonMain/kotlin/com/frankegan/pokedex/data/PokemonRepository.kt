@@ -3,30 +3,36 @@ package com.frankegan.pokedex.data
 import com.frankegan.pokedex.data.local.PokemonLocalDataSource
 import com.frankegan.pokedex.data.remote.PokemonRemoteDataSource
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class PokemonRepository(
-    private val remote: PokemonRemoteDataSource,
-    private val local: PokemonLocalDataSource
-) : PokemonDataSource, KoinComponent {
+class PokemonRepository : PokemonDataSource, KoinComponent {
 
-    override suspend fun getPokemonPagedResult(page: Int): Result<List<Pokemon>> {
-        return local.getPokemonPagedResult(page).recoverCatching {
-            val pageResult = remote.getPokemonPagedResult(page).getOrThrow()
+    private val remote: PokemonRemoteDataSource by inject()
+    private val local: PokemonLocalDataSource by inject()
+
+    @Throws(Exception::class)
+    override suspend fun getPokemonPage(page: Int): List<Pokemon> {
+        return runCatching { local.getPokemonPage(page) }.recoverCatching {
+            val pageResult = remote.getPokemonPage(page)
             for (pokemon in pageResult) {
                 local.savePokemon(pokemon)
             }
             pageResult
-        }
+        }.getOrThrow()
     }
 
-    override suspend fun getPokemonSpecies(id: Int): Result<PokemonSpecies> {
-        return local.getPokemonSpecies(id).recoverCatching {
-            val species = remote.getPokemonSpecies(id).getOrThrow()
-            local.savePokemonSpecies(species).getOrThrow()
-        }
+    @Throws(Exception::class)
+    override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
+        return runCatching { local.getPokemonSpecies(id) }.recoverCatching {
+            val species = remote.getPokemonSpecies(id)
+            local.savePokemonSpecies(species)
+        }.getOrThrow()
     }
 
-    override suspend fun savePokemon(pokemon: Pokemon): Result<Pokemon> = local.savePokemon(pokemon)
+    @Throws(Exception::class)
+    override suspend fun savePokemon(pokemon: Pokemon): Pokemon = local.savePokemon(pokemon)
 
-    override suspend fun savePokemonSpecies(species: PokemonSpecies): Result<PokemonSpecies> = local.savePokemonSpecies(species)
+    @Throws(Exception::class)
+    override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies =
+        local.savePokemonSpecies(species)
 }
