@@ -11,6 +11,9 @@
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		7555FFB2242A642300829871 /* shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* shared.framework */; };
 		7555FFB3242A642300829871 /* shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8513795B2673FD7C00D707B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8513795A2673FD7C00D707B3 /* AppDelegate.swift */; };
+		8513795D2673FDD000D707B3 /* PokemonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8513795C2673FDD000D707B3 /* PokemonRow.swift */; };
+		8513795F26744FC700D707B3 /* AsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8513795E26744FC700D707B3 /* AsyncImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +36,9 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7555FFB1242A642300829871 /* shared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = shared.framework; path = "../shared/build/xcode-frameworks/shared.framework"; sourceTree = "<group>"; };
+		8513795A2673FD7C00D707B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		8513795C2673FDD000D707B3 /* PokemonRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonRow.swift; sourceTree = "<group>"; };
+		8513795E26744FC700D707B3 /* AsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +76,9 @@
 				7555FF82242A565900829871 /* ContentView.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
+				8513795A2673FD7C00D707B3 /* AppDelegate.swift */,
+				8513795C2673FDD000D707B3 /* PokemonRow.swift */,
+				8513795E26744FC700D707B3 /* AsyncImageView.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -172,7 +181,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				8513795D2673FDD000D707B3 /* PokemonRow.swift in Sources */,
+				8513795B2673FD7C00D707B3 /* AppDelegate.swift in Sources */,
+				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				8513795F26744FC700D707B3 /* AsyncImageView.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
