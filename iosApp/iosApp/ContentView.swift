@@ -40,7 +40,7 @@ extension ContentView {
         }
         
         func loadPokemon() {
-            pokemonRepo.getPokemonPaged(page: 0) { pokemon, error in
+            pokemonRepo.getPokemonPage(page: 0) { pokemon, error in
                 
                 if (pokemon != nil){
                     self.pokemonResult = .success(pokemon!)
