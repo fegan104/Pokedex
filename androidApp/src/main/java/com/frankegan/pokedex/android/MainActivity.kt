@@ -2,18 +2,21 @@ package com.frankegan.pokedex.android
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.frankegan.pokedex.Greeting
-import android.widget.TextView
-import androidx.fragment.app.commit
-import com.frankegan.pokedex.android.ui.home.HomeFragment
+import androidx.activity.compose.setContent
+import com.frankegan.pokedex.android.ui.home.HomeScreen
+import com.frankegan.pokedex.android.ui.home.HomeViewModel
+import com.frankegan.pokedex.android.ui.theme.PokedexTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
+    private val viewModel by viewModel<HomeViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        supportFragmentManager.commit {
-            replace(android.R.id.content, HomeFragment())
+        setContent {
+            PokedexTheme {
+                HomeScreen(viewModel)
+            }
         }
     }
 }

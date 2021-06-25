@@ -25,7 +25,7 @@ class HomeAdapter : PagingDataAdapter<Pokemon, HomeAdapter.ViewHolder>(REPO_COMP
     class ViewHolder(private val binding: HomeRowItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(pokemon: Pokemon) {
-            binding.pokemonName.text = pokemon.name.replaceFirstChar { it.titlecase() }
+            binding.pokemonName.text = pokemon.name//.replaceFirstChar { it.titlecase() }
             binding.pokemonNumber.text = pokemon.formattedNumber
             binding.pokemonImg.load(pokemon.sprites.frontDefault)
         }

@@ -1,5 +1,6 @@
 package com.frankegan.pokedex.android.ui.home
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.frankegan.pokedex.data.Pokemon
@@ -35,7 +36,10 @@ class PokemonPagerSource(
                     nextKey = currentPage + 1
                 )
             },
-            onFailure = { LoadResult.Error(it) }
+            onFailure = {
+                Log.e("PokemonPagerSource", it.localizedMessage, it)
+                LoadResult.Error(it)
+            }
         )
     }
 }

@@ -1,7 +1,7 @@
 buildscript {
+    val compose_version by extra("1.0.0-beta07")
     repositories {
         gradlePluginPortal()
-        jcenter()
         google()
         mavenCentral()
     }
@@ -20,7 +20,6 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 }

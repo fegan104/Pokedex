@@ -1,7 +1,7 @@
 
 
 CREATE TABLE pokemonType (
-    pokemonId INTEGER AS Int PRIMARY KEY,
+    pokemonId INTEGER AS Int,
     slot INTEGER AS Int NOT NULL,
     name TEXT NOT NULL,
     url TEXT NOT NULL

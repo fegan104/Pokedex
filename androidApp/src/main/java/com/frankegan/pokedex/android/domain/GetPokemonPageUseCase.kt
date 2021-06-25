@@ -8,6 +8,7 @@ import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonDataSource
 import com.frankegan.pokedex.data.PokemonRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 
 class GetPokemonPageUseCase(
     private val pokemonRepo: PokemonRepository
