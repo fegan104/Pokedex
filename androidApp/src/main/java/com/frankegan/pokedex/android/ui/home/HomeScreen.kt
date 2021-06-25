@@ -25,50 +25,54 @@ import java.util.*
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    Column {
-        TopAppBar(
-            backgroundColor = MaterialTheme.colors.surface,
-            elevation = 0.dp
-        ) {
-            Text(
-                text = "Pokédex",
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-
-        val lazyPagingItems = viewModel.getPokemon().collectAsLazyPagingItems()
-
-        LazyColumn {
-            if (lazyPagingItems.loadState.refresh == LoadState.Loading
-                || lazyPagingItems.loadState.append == LoadState.Loading
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = MaterialTheme.colors.surface,
+                elevation = 0.dp
             ) {
-                item {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally)
-                    )
-                }
+                Text(
+                    text = "Pokédex",
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(16.dp)
+                )
             }
+        },
+    ) {
+        Column {
+            val lazyPagingItems = viewModel.getPokemon().collectAsLazyPagingItems()
 
-            items(lazyPagingItems) { pokemon ->
-                pokemon ?: return@items
-                PokemonRow(pokemon)
+            LazyColumn {
+                if (lazyPagingItems.loadState.refresh == LoadState.Loading
+                    || lazyPagingItems.loadState.append == LoadState.Loading
+                ) {
+                    item {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+
+                items(lazyPagingItems) { pokemon ->
+                    pokemon ?: return@items
+                    PokemonRow(pokemon)
+                }
             }
         }
     }
 }
 
 @Composable
-fun PokemonRow(pokemon: Pokemon) {
+private fun PokemonRow(pokemon: Pokemon) {
     Card(
         elevation = 0.dp,
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(2.dp, MaterialTheme.colors.primary),
         modifier = Modifier
-            .height(100.dp)
+            .height(96.dp)
             .padding(8.dp)
             .fillMaxWidth()
             .clickable { }
@@ -86,7 +90,7 @@ fun PokemonRow(pokemon: Pokemon) {
                 }
             )
             Text(
-                text = pokemon.name,
+                text = pokemon.name.replaceFirstChar { it.titlecase() },
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.constrainAs(name) {
                     start.linkTo(number.end, margin = 16.dp)
@@ -112,7 +116,7 @@ fun PokemonRow(pokemon: Pokemon) {
 
 @Preview(heightDp = 100)
 @Composable
-fun PokemonRowPreview() {
+private fun PokemonRowPreview() {
     val bulbasaur = Pokemon(
         id = 1,
         name = "Bulbasaur",
