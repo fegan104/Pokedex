@@ -8,8 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,6 +24,9 @@ import com.frankegan.pokedex.data.NamedApiResource
 import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonSprites
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import java.util.*
 
 @Composable
@@ -29,6 +35,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.surface,
+                contentPadding = rememberInsetsPaddingValues(
+                    LocalWindowInsets.current.statusBars,
+                    applyBottom = false,
+                ),
                 elevation = 0.dp
             ) {
                 Text(
@@ -39,11 +49,20 @@ fun HomeScreen(viewModel: HomeViewModel) {
                 )
             }
         },
-    ) {
+        bottomBar = {
+            // We add a spacer as a bottom bar, which is the same height as
+            // the navigation bar
+            Spacer(
+                Modifier
+                    .navigationBarsHeight()
+                    .fillMaxWidth()
+            )
+        }
+    ) { contentPadding ->
         Column {
             val lazyPagingItems = viewModel.getPokemon().collectAsLazyPagingItems()
 
-            LazyColumn {
+            LazyColumn(contentPadding = contentPadding) {
                 if (lazyPagingItems.loadState.refresh == LoadState.Loading
                     || lazyPagingItems.loadState.append == LoadState.Loading
                 ) {
@@ -58,7 +77,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
                 items(lazyPagingItems) { pokemon ->
                     pokemon ?: return@items
-                    PokemonRow(pokemon)
+                    PokemonRow(
+                        pokemon,
+                        onClick = {}
+                    )
                 }
             }
         }
@@ -66,16 +88,18 @@ fun HomeScreen(viewModel: HomeViewModel) {
 }
 
 @Composable
-private fun PokemonRow(pokemon: Pokemon) {
+private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
+    val cardShape = remember { RoundedCornerShape(12.dp) }
     Card(
         elevation = 0.dp,
-        shape = RoundedCornerShape(12.dp),
+        shape = cardShape,
         border = BorderStroke(2.dp, MaterialTheme.colors.primary),
         modifier = Modifier
             .height(96.dp)
             .padding(8.dp)
             .fillMaxWidth()
-            .clickable { }
+            .clip(cardShape)
+            .clickable { onClick() }
     ) {
         ConstraintLayout {
             val (number, name, sprite) = createRefs()
@@ -135,5 +159,5 @@ private fun PokemonRowPreview() {
             frontShinyFemale = null
         )
     )
-    PokemonRow(pokemon = bulbasaur)
+    PokemonRow(pokemon = bulbasaur) { }
 }
