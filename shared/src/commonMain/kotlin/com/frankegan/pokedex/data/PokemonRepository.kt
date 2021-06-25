@@ -9,8 +9,7 @@ class PokemonRepository : PokemonDataSource, KoinComponent {
 
     private val remote: PokemonRemoteDataSource by inject()
     private val local: PokemonLocalDataSource by inject()
-
-    @Throws(Exception::class)
+    
     override suspend fun getPokemonPage(page: Int): List<Pokemon> {
         return runCatching { local.getPokemonPage(page) }.recoverCatching {
             val pageResult = remote.getPokemonPage(page)
@@ -20,19 +19,16 @@ class PokemonRepository : PokemonDataSource, KoinComponent {
             pageResult
         }.getOrThrow()
     }
-
-    @Throws(Exception::class)
+    
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
         return runCatching { local.getPokemonSpecies(id) }.recoverCatching {
             val species = remote.getPokemonSpecies(id)
             local.savePokemonSpecies(species)
         }.getOrThrow()
     }
-
-    @Throws(Exception::class)
+    
     override suspend fun savePokemon(pokemon: Pokemon): Pokemon = local.savePokemon(pokemon)
-
-    @Throws(Exception::class)
+    
     override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies =
         local.savePokemonSpecies(species)
 }
