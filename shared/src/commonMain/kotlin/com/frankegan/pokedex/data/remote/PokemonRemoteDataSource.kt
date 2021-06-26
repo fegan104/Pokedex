@@ -18,14 +18,16 @@ class PokemonRemoteDataSource(private val httpClient: HttpClient) : PokemonDataS
     /**
      * TODO is there a more asynchronous way to handle this for Kotlin Native?
      */
-    override suspend fun getPokemonPage(page: Int): List<Pokemon> = coroutineScope {
-        val pokemonLinks: NamedApiResourceList =
-            httpClient.get("$ENDPOINT/pokemon/?limit=$PAGE_SIZE&offset=${page * PAGE_SIZE}")
-        val pokemon = pokemonLinks.results.map { result ->
+    override suspend fun getPokemonPage(page: Int): List<Pokemon> {
+        val pokemonLinks: NamedApiResourceList = httpClient.get(
+            "$ENDPOINT/pokemon/?limit=$PAGE_SIZE&offset=${page * PAGE_SIZE}"
+        )
+
+        val pokemon = pokemonLinks.results.mapAsync { result ->
             httpClient.get<Pokemon>(result.url)
         }
 
-        pokemon.sortedBy { it.id }
+        return pokemon.sortedBy { it.id }
     }
 
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
@@ -40,3 +42,6 @@ class PokemonRemoteDataSource(private val httpClient: HttpClient) : PokemonDataS
         throw Error("API endpoint is read-only")
     }
 }
+
+private suspend fun <A, B> Iterable<A>.mapAsync(f: suspend (A) -> B): List<B> =
+    coroutineScope { map { async { f(it) } }.awaitAll() }
