@@ -16,18 +16,16 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
 
     override suspend fun getPokemonPage(page: Int): List<Pokemon> {
         return appDatabase.transactionWithContext(Dispatchers.Default) {
-            val pokemonQuery = appDatabase
-                .pokemonQueries
-                .selectByIdBetween(
+            val pokemonQuery = pokemonQueries.selectByIdBetween(
                     page * PAGE_SIZE + 1,
                     (page + 1) * PAGE_SIZE
-                ) { id, name, speciesName, speciesUrl, height, weight ->
+            ) { id, name, speciesName, speciesUrl, height, weight ->
 
-                    val types = queryTypes(id)
+                val types = queryTypes(id)
 
-                    val sprites = querySprites(id)
+                val sprites = querySprites(id)
 
-                    Pokemon(
+                Pokemon(
                         id = id,
                         name = name,
                         height = height,
@@ -35,8 +33,8 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
                         species = NamedApiResource(name = speciesName, url = speciesUrl),
                         types,
                         sprites
-                    )
-                }
+                )
+            }
 
             pokemonQuery.executeAsList().throwIfEmpty()
         }
@@ -44,27 +42,23 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
 
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
         return appDatabase.transactionWithContext(Dispatchers.Default) {
-            val pokemonSpeciesQuery = appDatabase
-                .pokemonSpeciesQueries
-                .selectSpeciesByPokemonId(id) { _, name, colorName, colorUrl, generationName, generationUrl ->
-                    val flavorTextEntries = appDatabase
-                        .pokemonSpeciesQueries
-                        .selectFlavorTextByPokemonId(id) { _, flavorText, versionName, versionUrl, languageName, languageUrl ->
-                            PokemonSpeciesFlavorText(
-                                flavorText = flavorText,
-                                language = NamedApiResource(name = languageName, url = languageUrl),
-                                version = NamedApiResource(name = versionName, url = versionUrl)
-                            )
-                        }.executeAsList()
+            val pokemonSpeciesQuery = pokemonSpeciesQueries.selectSpeciesByPokemonId(id) { _, name, colorName, colorUrl, generationName, generationUrl ->
+                val flavorTextEntries = pokemonSpeciesQueries.selectFlavorTextByPokemonId(id) { _, flavorText, versionName, versionUrl, languageName, languageUrl ->
+                    PokemonSpeciesFlavorText(
+                            flavorText = flavorText,
+                            language = NamedApiResource(name = languageName, url = languageUrl),
+                            version = NamedApiResource(name = versionName, url = versionUrl)
+                    )
+                }.executeAsList()
 
-                    PokemonSpecies(
+                PokemonSpecies(
                         id = id,
                         name = name,
                         color = NamedApiResource(name = colorName, colorUrl),
                         generation = NamedApiResource(name = generationName, url = generationUrl),
                         flavorTextEntries = flavorTextEntries
-                    )
-                }
+                )
+            }
 
             pokemonSpeciesQuery.executeAsOne()
         }
@@ -73,33 +67,33 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
     override suspend fun savePokemon(pokemon: Pokemon): Pokemon {
 
         return appDatabase.transactionWithContext(Dispatchers.Default) {
-            appDatabase.pokemonQueries.insert(
-                id = pokemon.id,
-                name = pokemon.name,
-                speciesName = pokemon.species.name,
-                speciesUrl = pokemon.species.url,
-                height = pokemon.height,
-                weight = pokemon.weight
+            pokemonQueries.insert(
+                    id = pokemon.id,
+                    name = pokemon.name,
+                    speciesName = pokemon.species.name,
+                    speciesUrl = pokemon.species.url,
+                    height = pokemon.height,
+                    weight = pokemon.weight
             )
 
-            appDatabase.pokemonSpriteQueries.insert(
-                pokemonId = pokemon.id,
-                backDefault = pokemon.sprites.backDefault,
-                backShiny = pokemon.sprites.backShiny,
-                frontDefault = pokemon.sprites.frontDefault,
-                frontShiny = pokemon.sprites.frontShiny,
-                backFemale = pokemon.sprites.backFemale,
-                backShinyFemale = pokemon.sprites.backShinyFemale,
-                frontFemale = pokemon.sprites.frontFemale,
-                frontShinyFemale = pokemon.sprites.frontShinyFemale
+            pokemonSpriteQueries.insert(
+                    pokemonId = pokemon.id,
+                    backDefault = pokemon.sprites.backDefault,
+                    backShiny = pokemon.sprites.backShiny,
+                    frontDefault = pokemon.sprites.frontDefault,
+                    frontShiny = pokemon.sprites.frontShiny,
+                    backFemale = pokemon.sprites.backFemale,
+                    backShinyFemale = pokemon.sprites.backShinyFemale,
+                    frontFemale = pokemon.sprites.frontFemale,
+                    frontShinyFemale = pokemon.sprites.frontShinyFemale
             )
 
             for (pokemonType in pokemon.types) {
-                appDatabase.pokemonTypeQueries.insert(
-                    pokemonId = pokemon.id,
-                    slot = pokemonType.slot,
-                    name = pokemonType.type.name,
-                    url = pokemonType.type.url
+                pokemonTypeQueries.insert(
+                        pokemonId = pokemon.id,
+                        slot = pokemonType.slot,
+                        name = pokemonType.type.name,
+                        url = pokemonType.type.url
                 )
             }
 
@@ -110,13 +104,13 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
     override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies {
 
         return appDatabase.transactionWithContext(Dispatchers.Default) {
-            appDatabase.pokemonSpeciesQueries.insertPokemonSpecies(
-                id = species.id,
-                name = species.name,
-                colorName = species.color.name,
-                colorUrl = species.color.url,
-                generationName = species.generation.name,
-                generationUrl = species.generation.url
+            pokemonSpeciesQueries.insertPokemonSpecies(
+                    id = species.id,
+                    name = species.name,
+                    colorName = species.color.name,
+                    colorUrl = species.color.url,
+                    generationName = species.generation.name,
+                    generationUrl = species.generation.url
             )
 
             species
@@ -126,14 +120,14 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
     private fun querySprites(pokemonId: Int): PokemonSprites {
         return appDatabase.pokemonSpriteQueries.selectByPokemonId(pokemonId) { _, backDefault, backShiny, frontDefault, frontShiny, backFemale, backShinyFemale, frontFemale, frontShinyFemale ->
             PokemonSprites(
-                backDefault,
-                backShiny,
-                frontDefault,
-                frontShiny,
-                backFemale,
-                backShinyFemale,
-                frontFemale,
-                frontShinyFemale
+                    backDefault,
+                    backShiny,
+                    frontDefault,
+                    frontShiny,
+                    backFemale,
+                    backShinyFemale,
+                    frontFemale,
+                    frontShinyFemale
             )
         }.executeAsOne()
     }

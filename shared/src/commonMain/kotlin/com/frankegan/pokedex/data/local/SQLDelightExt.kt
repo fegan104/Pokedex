@@ -6,10 +6,10 @@ import com.squareup.sqldelight.TransactionWithoutReturn
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-suspend fun <R> Transacter.transactionWithContext(
+suspend fun <R> AppDatabase.transactionWithContext(
     coroutineContext: CoroutineContext,
     noEnclosing: Boolean = false,
-    body: TransactionWithReturn<R>.() -> R
+    body: AppDatabase.() -> R
 ): R {
     return withContext(coroutineContext) {
         transactionWithResult(noEnclosing) {

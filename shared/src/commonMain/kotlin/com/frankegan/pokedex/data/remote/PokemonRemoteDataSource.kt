@@ -7,17 +7,12 @@ import com.frankegan.pokedex.data.PokemonDataSource.Companion.PAGE_SIZE
 import com.frankegan.pokedex.data.PokemonSpecies
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 
 private const val ENDPOINT = "https://pokeapi.co/api/v2"
 
 class PokemonRemoteDataSource(private val httpClient: HttpClient) : PokemonDataSource {
 
-    /**
-     * TODO is there a more asynchronous way to handle this for Kotlin Native?
-     */
     override suspend fun getPokemonPage(page: Int): List<Pokemon> {
         val pokemonLinks: NamedApiResourceList = httpClient.get(
             "$ENDPOINT/pokemon/?limit=$PAGE_SIZE&offset=${page * PAGE_SIZE}"
