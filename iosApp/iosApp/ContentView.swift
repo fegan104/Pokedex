@@ -15,10 +15,11 @@ struct ContentView: View {
         switch viewModel.pokemonResult {
         case .success(let pokemon):
             return AnyView(
-                List {
-                    ForEach(0..<pokemon.count) { index in
-                        PokemonRow(pokemon: pokemon[index])
-                    }
+                List(pokemon) { item in
+                    PokemonRow(pokemon: item)
+                        .onAppear {
+                            viewModel.loadMoreContentIfNeeded(currentItem: item)
+                        }
                 }
             )
         case .failure(let error):
@@ -33,21 +34,52 @@ extension ContentView {
         let pokemonRepo: PokemonRepository
         
         @Published var pokemonResult: Result<[Pokemon], Error> = .success([])
+        @Published var isLoadingPage = false
+        private var currentPage = 0
         
         init(pokemonRepo: PokemonRepository) {
             self.pokemonRepo = pokemonRepo
-            self.loadPokemon()
+            self.loadMoreContent()
         }
         
-        func loadPokemon() {
-            pokemonRepo.getPokemonPage(page: 0) { pokemon, error in
+        private func loadMoreContent() {
+            guard !isLoadingPage else {
+              return
+            }
+
+            isLoadingPage = true
+
+            pokemonRepo.getPokemonPage(page: Int32(currentPage)) { pokemon, error in
+                self.isLoadingPage = false
+                self.currentPage += 1
                 
-                if (pokemon != nil){
-                    self.pokemonResult = .success(pokemon!)
+                if (pokemon != nil) {
+                    self.pokemonResult = self.pokemonResult.map { currentPokemon in
+                        currentPokemon + pokemon!
+                    }
                 } else {
+                    print(error?.localizedDescription ?? "error")
                     self.pokemonResult = .failure(error ?? NSError(domain: "No data found", code: 404, userInfo: nil))
                 }
             }
+          }
+        
+        func loadMoreContentIfNeeded(currentItem item: Pokemon?) {
+            guard let item = item else {
+              loadMoreContent()
+              return
+            }
+
+            pokemonResult.map { data  in
+                let thresholdIndex = data.index(data.endIndex, offsetBy: -5)
+                if data.firstIndex(where: { $0.id == item.id }) == thresholdIndex {
+                  loadMoreContent()
+                }
+            }
+          }
+        
+        private func loadPokemon(page: Int) {
+            
         }
     }
 }
