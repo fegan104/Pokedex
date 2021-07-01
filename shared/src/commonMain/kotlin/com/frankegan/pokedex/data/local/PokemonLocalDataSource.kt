@@ -8,14 +8,18 @@ import com.frankegan.pokedex.data.PokemonSpecies
 import com.frankegan.pokedex.data.PokemonSpeciesFlavorText
 import com.frankegan.pokedex.data.PokemonSprites
 import com.frankegan.pokedex.data.PokemonType
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : PokemonDataSource {
+class PokemonLocalDataSource(
+    databaseDriverFactory: DatabaseDriverFactory,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+) : PokemonDataSource {
 
     private val appDatabase by lazy { AppDatabase(databaseDriverFactory.createDriver()) }
 
     override suspend fun getPokemonPage(page: Int): List<Pokemon> {
-        return appDatabase.transactionWithContext(Dispatchers.Default) {
+        return appDatabase.transactionWithContext(dispatcher) {
             val pokemonQuery = pokemonQueries.selectByIdBetween(
                     page * PAGE_SIZE + 1,
                     (page + 1) * PAGE_SIZE
@@ -41,7 +45,7 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
     }
 
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
-        return appDatabase.transactionWithContext(Dispatchers.Default) {
+        return appDatabase.transactionWithContext(dispatcher) {
             val pokemonSpeciesQuery = pokemonSpeciesQueries.selectSpeciesByPokemonId(id) { _, name, colorName, colorUrl, generationName, generationUrl ->
                 val flavorTextEntries = pokemonSpeciesQueries.selectFlavorTextByPokemonId(id) { _, flavorText, versionName, versionUrl, languageName, languageUrl ->
                     PokemonSpeciesFlavorText(
@@ -66,7 +70,7 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
 
     override suspend fun savePokemon(pokemon: Pokemon): Pokemon {
 
-        return appDatabase.transactionWithContext(Dispatchers.Default) {
+        return appDatabase.transactionWithContext(dispatcher) {
             pokemonQueries.insert(
                     id = pokemon.id,
                     name = pokemon.name,
@@ -103,7 +107,7 @@ class PokemonLocalDataSource(databaseDriverFactory: DatabaseDriverFactory) : Pok
 
     override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies {
 
-        return appDatabase.transactionWithContext(Dispatchers.Default) {
+        return appDatabase.transactionWithContext(dispatcher) {
             pokemonSpeciesQueries.insertPokemonSpecies(
                     id = species.id,
                     name = species.name,

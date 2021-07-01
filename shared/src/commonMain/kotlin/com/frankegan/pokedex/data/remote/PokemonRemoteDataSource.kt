@@ -11,9 +11,12 @@ import kotlinx.coroutines.*
 
 private const val ENDPOINT = "https://pokeapi.co/api/v2"
 
-class PokemonRemoteDataSource(private val httpClient: HttpClient) : PokemonDataSource {
+class PokemonRemoteDataSource(
+    private val httpClient: HttpClient,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main
+) : PokemonDataSource {
 
-    override suspend fun getPokemonPage(page: Int): List<Pokemon> {
+    override suspend fun getPokemonPage(page: Int): List<Pokemon> = withContext(dispatcher) {
         val pokemonLinks: NamedApiResourceList = httpClient.get(
             "$ENDPOINT/pokemon/?limit=$PAGE_SIZE&offset=${page * PAGE_SIZE}"
         )
@@ -22,11 +25,11 @@ class PokemonRemoteDataSource(private val httpClient: HttpClient) : PokemonDataS
             httpClient.get<Pokemon>(result.url)
         }
 
-        return pokemon.sortedBy { it.id }
+        pokemon.sortedBy { it.id }
     }
 
-    override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
-        return httpClient.get("$ENDPOINT/pokemon-species/$id")
+    override suspend fun getPokemonSpecies(id: Int): PokemonSpecies = withContext(dispatcher) {
+        httpClient.get("$ENDPOINT/pokemon-species/$id")
     }
 
     override suspend fun savePokemon(pokemon: Pokemon): Pokemon {
