@@ -48,11 +48,34 @@ data class NamedApiResourceList(
 ) : ResourceSummaryList<NamedApiResource>
 
 
+private val typeNameToTypeColor = mapOf(
+    "normal" to 0xFFA8A87B,
+    "fighting" to 0xFFBE322E,
+    "flying" to 0xFFA893EE,
+    "poison" to 0xFF9F449F,
+    "ground" to 0xFFD9BA6B,
+    "rock" to 0xFFB79F41,
+    "bug" to 0xFFA8B732,
+    "ghost" to 0xFF705A97,
+    "steel" to 0xFFB8B9CF,
+    "fire" to 0xFFEE803B,
+    "water" to 0xFF6A92ED,
+    "grass" to 0xFF7BC757,
+    "electric" to 0xFFF7CF43,
+    "psychic" to 0xFFF65B89,
+    "ice" to 0xFF9AD8D8,
+    "dragon" to 0xFF7043F4,
+    "dark" to 0xFF705849,
+    "fairy" to 0xFFED9AAD
+)
+
 @Serializable
 data class PokemonType(
     val slot: Int,
     val type: NamedApiResource
-)
+) {
+    val color: Long = typeNameToTypeColor[type.name]!!
+}
 
 @Serializable
 data class PokemonSprites(

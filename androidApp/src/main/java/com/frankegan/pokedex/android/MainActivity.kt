@@ -7,15 +7,22 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
+import androidx.navigation.compose.rememberNavController
+import com.frankegan.pokedex.android.ui.NavRoute
 import com.frankegan.pokedex.android.ui.home.HomeScreen
 import com.frankegan.pokedex.android.ui.home.HomeViewModel
+import com.frankegan.pokedex.android.ui.pokemon_detail.PokemonDetailScreen
 import com.frankegan.pokedex.android.ui.theme.PokedexTheme
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModel<HomeViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +39,22 @@ class MainActivity : AppCompatActivity() {
                 systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = useDarkIcons)
             }
 
+            val navController = rememberNavController()
+
             PokedexTheme {
                 ProvideWindowInsets {
-                    HomeScreen(viewModel)
+                    NavHost(navController = navController, startDestination = NavRoute.Home.route) {
+                        composable(NavRoute.Home.route) { HomeScreen(getViewModel(), navController) }
+                        composable(
+                            NavRoute.PokemonDetail.route,
+                            arguments = listOf(navArgument("pokemonId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            PokemonDetailScreen(
+                                getViewModel(),
+                                backStackEntry.arguments?.getInt("pokemonId")
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.frankegan.pokedex.android.ui.home
+package com.frankegan.pokedex.android.domain
 
 import android.util.Log
 import androidx.paging.PagingSource

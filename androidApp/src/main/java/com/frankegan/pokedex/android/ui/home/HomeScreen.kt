@@ -12,14 +12,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.frankegan.pokedex.android.ui.NavRoute
 import com.frankegan.pokedex.data.NamedApiResource
 import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonSprites
@@ -30,7 +31,7 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import java.util.*
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -79,7 +80,9 @@ fun HomeScreen(viewModel: HomeViewModel) {
                     pokemon ?: return@items
                     PokemonRow(
                         pokemon,
-                        onClick = {}
+                        onClick = {
+                            navController.navigate(NavRoute.PokemonDetail.createRoute(pokemon.id))
+                        }
                     )
                 }
             }
