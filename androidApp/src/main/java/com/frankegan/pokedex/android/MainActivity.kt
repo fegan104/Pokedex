@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.frankegan.pokedex.android.ui.NavRoute
 import com.frankegan.pokedex.android.ui.home.HomeScreen
 import com.frankegan.pokedex.android.ui.home.HomeViewModel
@@ -23,6 +24,8 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
+
+    private val homeViewModel: HomeViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +43,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             val navController = rememberNavController()
+            val lazyPagingItems = homeViewModel.getPokemon().collectAsLazyPagingItems()
 
             PokedexTheme {
                 ProvideWindowInsets {
                     NavHost(navController = navController, startDestination = NavRoute.Home.route) {
-                        composable(NavRoute.Home.route) { HomeScreen(getViewModel(), navController) }
+                        composable(NavRoute.Home.route) { HomeScreen(lazyPagingItems, navController) }
                         composable(
                             NavRoute.PokemonDetail.route,
                             arguments = listOf(navArgument("pokemonId") { type = NavType.IntType })

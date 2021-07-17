@@ -3,8 +3,12 @@ package com.frankegan.pokedex.android.ui.home
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.frankegan.pokedex.android.ui.NavRoute
@@ -31,7 +37,10 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import java.util.*
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
+fun HomeScreen(lazyPagingItems: LazyPagingItems<Pokemon>, navController: NavController) {
+    val listState = rememberLazyListState()
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -61,9 +70,12 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
         }
     ) { contentPadding ->
         Column {
-            val lazyPagingItems = viewModel.getPokemon().collectAsLazyPagingItems()
 
-            LazyColumn(contentPadding = contentPadding) {
+            LazyColumn(
+                contentPadding = contentPadding,
+                modifier = Modifier.scrollable(scrollState, Orientation.Vertical),
+                state = listState,
+            ) {
                 if (lazyPagingItems.loadState.refresh == LoadState.Loading
                     || lazyPagingItems.loadState.append == LoadState.Loading
                 ) {
