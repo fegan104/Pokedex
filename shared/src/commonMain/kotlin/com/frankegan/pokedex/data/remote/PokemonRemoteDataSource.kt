@@ -28,6 +28,10 @@ class PokemonRemoteDataSource(
         pokemon.sortedBy { it.id }
     }
 
+    override suspend fun getPokemon(pokemonId: Int): Pokemon = withContext(dispatcher) {
+        httpClient.get("$ENDPOINT/pokemon/$pokemonId")
+    }
+
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies = withContext(dispatcher) {
         httpClient.get("$ENDPOINT/pokemon-species/$id")
     }

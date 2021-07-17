@@ -7,6 +7,9 @@ interface PokemonDataSource {
     suspend fun getPokemonPage(page: Int): List<Pokemon>
 
     @Throws(Exception::class)
+    suspend fun getPokemon(pokemonId: Int): Pokemon
+
+    @Throws(Exception::class)
     suspend fun getPokemonSpecies(id: Int): PokemonSpecies
 
     @Throws(Exception::class)

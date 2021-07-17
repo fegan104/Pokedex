@@ -20,6 +20,14 @@ class PokemonRepository : PokemonDataSource, KoinComponent {
         }.getOrThrow()
     }
 
+    override suspend fun getPokemon(pokemonId: Int): Pokemon {
+        return runCatching { local.getPokemon(pokemonId) }.recoverCatching {
+            val pokemon = remote.getPokemon(pokemonId)
+            local.savePokemon(pokemon)
+            pokemon
+        }.getOrThrow()
+    }
+
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
         return runCatching { local.getPokemonSpecies(id) }.recoverCatching {
             val species = remote.getPokemonSpecies(id)

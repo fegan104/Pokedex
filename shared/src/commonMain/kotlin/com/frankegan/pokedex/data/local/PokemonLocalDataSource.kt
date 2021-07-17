@@ -44,6 +44,27 @@ class PokemonLocalDataSource(
         }
     }
 
+    override suspend fun getPokemon(pokemonId: Int): Pokemon {
+        return appDatabase.transactionWithContext(dispatcher) {
+            pokemonQueries.selectById(pokemonId) { id, name, speciesName, speciesUrl, height, weight ->
+                val types = queryTypes(id)
+
+                val sprites = querySprites(id)
+
+                Pokemon(
+                    id = id,
+                    name = name,
+                    height = height,
+                    weight = weight,
+                    species = NamedApiResource(name = speciesName, url = speciesUrl),
+                    types,
+                    sprites
+                )
+
+            }
+        }.executeAsOne()
+    }
+
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
         return appDatabase.transactionWithContext(dispatcher) {
             val pokemonSpeciesQuery = pokemonSpeciesQueries.selectSpeciesByPokemonId(id) { _, name, colorName, colorUrl, generationName, generationUrl ->
@@ -116,6 +137,18 @@ class PokemonLocalDataSource(
                     generationName = species.generation.name,
                     generationUrl = species.generation.url
             )
+
+
+            for (flavorText in species.flavorTextEntries) {
+                pokemonSpeciesQueries.insertFlavorText(
+                    pokemonSpeciesId = species.id,
+                    flavorText = flavorText.flavorText,
+                    versionName = flavorText.version.name,
+                    versionUrl = flavorText.version.url,
+                    languageName = flavorText.language.name,
+                    languageUrl = flavorText.language.url
+                )
+            }
 
             species
         }
