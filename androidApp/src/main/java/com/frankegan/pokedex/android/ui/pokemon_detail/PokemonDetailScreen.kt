@@ -1,7 +1,6 @@
 package com.frankegan.pokedex.android.ui.pokemon_detail
 
 import android.content.res.Configuration
-import android.graphics.Paint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,10 +13,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,8 +21,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.frankegan.pokedex.android.R
 import com.frankegan.pokedex.data.*
 import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.imageloading.rememberDrawablePainter
-import com.google.accompanist.insets.LocalWindowInsets
 
 @Composable
 fun PokemonDetailScreen(viewModel: PokemonDetailViewModel, pokemonId: Int?) {
@@ -127,6 +121,7 @@ private fun PokemonDetailContent(pokemon: Pokemon, species: PokemonSpecies) {
                 )
 
                 DetailSectionControls(
+                    pokemon = pokemon,
                     selectedColors = ButtonDefaults.buttonColors(backgroundColor = typeThemeColor),
                     unSelectedColors = ButtonDefaults.textButtonColors(contentColor = typeThemeColor),
                 )
@@ -161,7 +156,7 @@ private fun PokemonDetailCardPreview() {
         weight = 1,
         species = NamedApiResource(name = "Bulbasaur", ""),
         types = listOf(
-            PokemonType(1, NamedApiResource(name = "Grass", ""))
+            PokemonType(1, NamedApiResource(name = "grass", ""))
         ),
         sprites = PokemonSprites(
             backDefault = null,
@@ -172,6 +167,11 @@ private fun PokemonDetailCardPreview() {
             backShinyFemale = null,
             frontFemale = null,
             frontShinyFemale = null
+        ),
+        stats = listOf(
+            PokemonStats(45, 0, NamedApiResource("hp", "")),
+            PokemonStats(49, 0, NamedApiResource("attack", "")),
+            PokemonStats(49, 0, NamedApiResource("defense", ""))
         )
     )
 

@@ -1,0 +1,22 @@
+CREATE TABLE pokemonStats (
+    pokemonId INTEGER AS Int NOT NULL,
+    baseStat INTEGER AS Int NOT NULL,
+    effort INTEGER AS Int NOT NULL,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL
+);
+
+selectById:
+SELECT *
+FROM pokemonStats
+WHERE pokemonId = ?;
+
+insert:
+INSERT INTO pokemonStats(
+    pokemonId,
+    baseStat,
+    effort,
+    name,
+    url
+)
+VALUES (?, ?, ?, ?, ?);

@@ -14,7 +14,8 @@ data class Pokemon(
     val weight: Int,
     val species: NamedApiResource,
     val types: List<PokemonType>,
-    val sprites: PokemonSprites
+    val sprites: PokemonSprites,
+    val stats: List<PokemonStats>
 ) {
     val formattedNumber: String
         get() = "#${id.toString().padStart(3, '0')}"
@@ -113,4 +114,12 @@ data class PokemonSpeciesFlavorText(
     val flavorText: String,
     val language: NamedApiResource,
     val version: NamedApiResource
+)
+
+@Serializable
+data class PokemonStats(
+    @SerialName("base_stat")
+    val baseStat: Int,
+    val effort: Int,
+    val stat: NamedApiResource
 )

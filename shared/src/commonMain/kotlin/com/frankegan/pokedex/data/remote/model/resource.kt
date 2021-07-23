@@ -1,6 +1,5 @@
 package com.frankegan.pokedex.data.remote.model
 
-import com.frankegan.pokedex.data.NamedApiResource
 import com.frankegan.pokedex.data.ResourceSummary
 
 fun String.urlToId(): Int {

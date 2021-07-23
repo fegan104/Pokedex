@@ -3,9 +3,7 @@ package com.frankegan.pokedex.android.ui.pokemon_detail
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonRepository
-import com.frankegan.pokedex.data.PokemonSpecies
 import java.lang.Exception
 
 class PokemonDetailViewModel(
@@ -20,7 +18,7 @@ class PokemonDetailViewModel(
         try {
             val pokemon = pokemonRepo.getPokemon(pokemonId)
             val species = pokemonRepo.getPokemonSpecies(pokemonId)
-            Log.d("PokemonDetailViewModel", species.flavorTextEntries.firstOrNull()?.flavorText.toString())
+            Log.d("PokemonDetailViewModel", pokemon.stats.toString())
             emit(pokemon to species)
         } catch (err: Exception) {
             Log.e("PokemonDetailViewModel", err.localizedMessage, err)

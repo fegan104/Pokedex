@@ -22,14 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.paging.LoadState
-import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.frankegan.pokedex.android.ui.NavRoute
 import com.frankegan.pokedex.data.NamedApiResource
 import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonSprites
+import com.frankegan.pokedex.data.PokemonStats
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsHeight
@@ -69,7 +68,7 @@ fun HomeScreen(lazyPagingItems: LazyPagingItems<Pokemon>, navController: NavCont
             )
         }
     ) { contentPadding ->
-        Column {
+        Box {
 
             LazyColumn(
                 contentPadding = contentPadding,
@@ -172,6 +171,11 @@ private fun PokemonRowPreview() {
             backShinyFemale = null,
             frontFemale = null,
             frontShinyFemale = null
+        ),
+        stats = listOf(
+            PokemonStats(45, 0, NamedApiResource("hp", "")),
+            PokemonStats(45, 0, NamedApiResource("atk", "")),
+            PokemonStats(45, 0, NamedApiResource("def", ""))
         )
     )
     PokemonRow(pokemon = bulbasaur) { }
