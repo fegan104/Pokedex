@@ -1,19 +1,17 @@
 buildscript {
-    val compose_version by extra("1.0.0-beta07")
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
     }
 
-    val kotlinVersion = "1.4.0"
     val sqlDelightVersion: String by project
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0")
-        classpath("com.android.tools.build:gradle:4.2.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10")
+        classpath("com.android.tools.build:gradle:7.0.0")
         classpath("com.squareup.sqldelight:gradle-plugin:$sqlDelightVersion")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:1.5.0")
     }
 }
 
