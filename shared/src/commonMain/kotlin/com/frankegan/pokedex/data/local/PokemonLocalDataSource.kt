@@ -2,15 +2,33 @@ package com.frankegan.pokedex.data.local
 
 import com.frankegan.pokedex.data.*
 import com.frankegan.pokedex.data.PokemonDataSource.Companion.PAGE_SIZE
+import com.frankegan.pokedex.data.local.model.PokemonMove
+import com.frankegan.pokedex.model.*
+import com.squareup.sqldelight.EnumColumnAdapter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import com.frankegan.pokedex.data.local.model.PokemonType.Adapter as PokemonTypeAdapter
+import com.frankegan.pokedex.data.local.model.PokemonStats.Adapter as PokemonStatsAdapter
 
 class PokemonLocalDataSource(
     databaseDriverFactory: DatabaseDriverFactory,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : PokemonDataSource {
 
-    private val appDatabase by lazy { AppDatabase(databaseDriverFactory.createDriver()) }
+    private val appDatabase by lazy {
+        AppDatabase(
+            databaseDriverFactory.createDriver(),
+            pokemonMoveAdapter = PokemonMove.Adapter(
+                typeNameAdapter = EnumColumnAdapter()
+            ),
+            pokemonTypeAdapter = PokemonTypeAdapter(
+                nameAdapter = EnumColumnAdapter()
+            ),
+            pokemonStatsAdapter = PokemonStatsAdapter(
+                nameAdapter = EnumColumnAdapter()
+            )
+        )
+    }
 
     override suspend fun getPokemonPage(page: Int): List<Pokemon> {
         return appDatabase.transactionWithContext(dispatcher) {
@@ -25,6 +43,8 @@ class PokemonLocalDataSource(
 
                 val stats = queryStats(id)
 
+                val moves = queryMoveResources(id)
+
                 Pokemon(
                     id = id,
                     name = name,
@@ -33,7 +53,8 @@ class PokemonLocalDataSource(
                     species = NamedApiResource(name = speciesName, url = speciesUrl),
                     types,
                     sprites,
-                    stats
+                    stats,
+                    moves
                 )
             }
 
@@ -50,6 +71,8 @@ class PokemonLocalDataSource(
 
                 val stats = queryStats(id)
 
+                val moves = queryMoveResources(id)
+
                 Pokemon(
                     id = id,
                     name = name,
@@ -58,9 +81,9 @@ class PokemonLocalDataSource(
                     species = NamedApiResource(name = speciesName, url = speciesUrl),
                     types,
                     sprites,
-                    stats
+                    stats,
+                    moves
                 )
-
             }
         }.executeAsOne()
     }
@@ -134,6 +157,15 @@ class PokemonLocalDataSource(
                 )
             }
 
+            for (move in pokemon.moves) {
+                pokemonMoveQueries.inertPokemonToMove(
+                    pokemon.id,
+                    move.move.id,
+                    move.move.name,
+                    move.move.url
+                )
+            }
+
             return@transactionWithContext pokemon
         }
     }
@@ -166,6 +198,73 @@ class PokemonLocalDataSource(
         }
     }
 
+    override suspend fun getMoves(pokemonId: Int): List<Move> {
+        return appDatabase.transactionWithContext(dispatcher) {
+            pokemonMoveQueries.selectMoves(pokemonId).executeAsList()
+                .groupBy(
+                    keySelector = {
+                        Move(
+                            id = it.moveId,
+                            name = it.name,
+                            displayNames = emptyList(),
+                            accuracy = it.accuracy,
+                            pp = it.pp,
+                            priority = it.priority,
+                            power = it.power,
+                            damageClass = NamedApiResource(it.damageClassName, it.damageClassUrl),
+                            flavorTextEntries = emptyList(),
+                            type = TypeResource(it.typeName, it.typeUrl)
+                        )
+                    },
+                    valueTransform = {
+                        MoveFlavorText(
+                            it.flavorText,
+                            NamedApiResource(it.languageName, it.languageUrl),
+                            NamedApiResource(it.versionGroupName, it.versionGroupUrl)
+                        ) to MoveName(
+                            language = NamedApiResource(it.languageName, it.languageName),
+                            moveName = it.moveName
+                        )
+                    })
+                .map { moveToFlavorText ->
+                    val (move, flavorTextAndMoveName) = moveToFlavorText
+                    move.copy(
+                        flavorTextEntries = flavorTextAndMoveName.map { it.first },
+                        displayNames = flavorTextAndMoveName.map { it.second }
+                    )
+                }.throwIfEmpty()
+        }
+    }
+
+    override suspend fun saveMoves(moves: List<Move>): List<Move> {
+        return appDatabase.transactionWithContext(dispatcher) {
+            for (move in moves) {
+                pokemonMoveQueries.inertMove(
+                    move.id,
+                    move.name,
+                    move.accuracy,
+                    move.pp,
+                    move.priority,
+                    move.power,
+                    move.damageClass.name,
+                    move.damageClass.url,
+                    move.type.name,
+                    move.type.url
+                )
+
+                for (name in move.displayNames) {
+                    pokemonMoveQueries.insertMoveName(
+                        move.id,
+                        moveName = name.moveName,
+                        languageName = name.language.name,
+                        languageUrl= name.language.url
+                    )
+                }
+            }
+            moves
+        }
+    }
+
     private fun querySprites(pokemonId: Int): PokemonSprites {
         return appDatabase.pokemonSpriteQueries.selectByPokemonId(pokemonId) { _, backDefault, backShiny, frontDefault, frontShiny, backFemale, backShinyFemale, frontFemale, frontShinyFemale ->
             PokemonSprites(
@@ -183,7 +282,7 @@ class PokemonLocalDataSource(
 
     private fun queryTypes(pokemonId: Int): List<PokemonType> {
         return appDatabase.pokemonTypeQueries.selectByPokemonId(pokemonId) { slot, typeName, url ->
-            PokemonType(slot, type = NamedApiResource(name = typeName, url = url))
+            PokemonType(slot, type = TypeResource(name = typeName, url = url))
         }.executeAsList()
     }
 
@@ -192,8 +291,14 @@ class PokemonLocalDataSource(
             PokemonStats(
                 baseStat,
                 effort,
-                NamedApiResource(stat_name, stat_url)
+                StatResource(stat_name, stat_url)
             )
+        }.executeAsList()
+    }
+
+    private fun queryMoveResources(pokemonId: Int): List<MoveResource> {
+        return appDatabase.pokemonMoveQueries.selectPokemonMoves(pokemonId) { moveName, moveUrl ->
+            MoveResource(moveName, moveUrl)
         }.executeAsList()
     }
 }

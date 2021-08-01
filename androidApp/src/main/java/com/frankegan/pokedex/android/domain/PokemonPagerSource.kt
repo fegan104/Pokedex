@@ -3,7 +3,7 @@ package com.frankegan.pokedex.android.domain
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.frankegan.pokedex.data.Pokemon
+import com.frankegan.pokedex.model.Pokemon
 import com.frankegan.pokedex.data.PokemonRepository
 
 

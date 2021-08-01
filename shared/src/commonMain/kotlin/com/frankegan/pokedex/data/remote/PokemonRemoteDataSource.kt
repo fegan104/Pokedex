@@ -1,10 +1,8 @@
 package com.frankegan.pokedex.data.remote
 
-import com.frankegan.pokedex.data.NamedApiResourceList
-import com.frankegan.pokedex.data.Pokemon
 import com.frankegan.pokedex.data.PokemonDataSource
 import com.frankegan.pokedex.data.PokemonDataSource.Companion.PAGE_SIZE
-import com.frankegan.pokedex.data.PokemonSpecies
+import com.frankegan.pokedex.model.*
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import kotlinx.coroutines.*
@@ -41,6 +39,15 @@ class PokemonRemoteDataSource(
     }
 
     override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies {
+        throw Error("API endpoint is read-only")
+    }
+
+    override suspend fun getMoves(pokemonId: Int): List<Move> = withContext(dispatcher) {
+        val pokemon = getPokemon(pokemonId)
+        pokemon.moves.mapAsync { httpClient.get(it.move.url) }
+    }
+
+    override suspend fun saveMoves(moves: List<Move>): List<Move> {
         throw Error("API endpoint is read-only")
     }
 }

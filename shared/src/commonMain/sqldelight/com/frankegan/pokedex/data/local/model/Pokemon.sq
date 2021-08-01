@@ -35,7 +35,7 @@ FROM pokemon
 WHERE id BETWEEN ? AND ?;
 
 insert:
-INSERT INTO pokemon(
+INSERT OR REPLACE INTO pokemon(
     id,
     name,
     speciesName,

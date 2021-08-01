@@ -1,6 +1,6 @@
-package com.frankegan.pokedex.data.remote.model
+package com.frankegan.pokedex.model
 
-import com.frankegan.pokedex.data.ResourceSummary
+import kotlinx.serialization.Serializable
 
 fun String.urlToId(): Int {
     return "/-?[0-9]+/$".toRegex().find(this)!!.value.filter { it.isDigit() || it == '-' }.toInt()
@@ -13,8 +13,6 @@ fun String.urlToCat(): String {
 private fun resourceUrl(id: Int, category: String): String {
     return "/api/v2/$category/$id/"
 }
-
-
 
 data class ApiResource(
     val url: String
@@ -38,3 +36,30 @@ data class ApiResourceList(
     override val previous: String?,
     override val results: List<ApiResource>
 ) : ResourceSummaryList<ApiResource>
+
+interface ResourceSummary {
+
+    val id: Int
+    val category: String
+}
+
+@Serializable
+data class NamedApiResource(
+    val name: String,
+    val url: String
+) : ResourceSummary {
+
+    override val category: String
+        get() = url.urlToCat()
+
+    override val id: Int
+        get() = url.urlToId()
+}
+
+@Serializable
+data class NamedApiResourceList(
+    override val count: Int,
+    override val next: String?,
+    override val previous: String?,
+    override val results: List<NamedApiResource>
+) : ResourceSummaryList<NamedApiResource>

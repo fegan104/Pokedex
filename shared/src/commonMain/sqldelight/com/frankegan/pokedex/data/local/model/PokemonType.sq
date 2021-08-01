@@ -1,9 +1,9 @@
-
+import com.frankegan.pokedex.model.TypeName;
 
 CREATE TABLE pokemonType (
     pokemonId INTEGER AS Int,
     slot INTEGER AS Int NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT AS TypeName NOT NULL,
     url TEXT NOT NULL
 );
 

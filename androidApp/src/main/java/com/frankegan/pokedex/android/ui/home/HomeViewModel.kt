@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.frankegan.pokedex.android.domain.GetPokemonPageUseCase
-import com.frankegan.pokedex.data.Pokemon
+import com.frankegan.pokedex.model.Pokemon
 import kotlinx.coroutines.flow.Flow
 
 class HomeViewModel(

@@ -18,7 +18,7 @@ FROM pokemonSprite
 WHERE pokemonId = ?;
 
 insert:
-INSERT INTO pokemonSprite(
+INSERT OR REPLACE INTO pokemonSprite(
     pokemonId,
     backDefault,
     backShiny,

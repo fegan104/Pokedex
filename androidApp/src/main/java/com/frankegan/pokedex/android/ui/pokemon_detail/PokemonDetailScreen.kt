@@ -19,26 +19,40 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.frankegan.pokedex.android.R
-import com.frankegan.pokedex.data.*
+import com.frankegan.pokedex.model.*
 import com.google.accompanist.coil.rememberCoilPainter
+
 
 @Composable
 fun PokemonDetailScreen(viewModel: PokemonDetailViewModel, pokemonId: Int?) {
-    val pokemonAndSpecies by viewModel.pokemonAndSpecies(pokemonId).observeAsState()
-    val (pokemon, species) = pokemonAndSpecies ?: (null to null)
+    val _uiState by viewModel.uiState(pokemonId).observeAsState()
 
     Scaffold { contentPadding ->
         Box(Modifier.padding(contentPadding)) {
-            if (pokemon == null || species == null) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("No Pokemon Found")
+            when (val uiState = _uiState) {
+                is PokemonDetailViewModel.UiState.Loading -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-            } else {
-                PokemonDetailContent(pokemon, species)
+
+                is PokemonDetailViewModel.UiState.Error -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = uiState.msg ?: "Unknown error occurred")
+                    }
+                }
+
+                is PokemonDetailViewModel.UiState.Data -> {
+                    PokemonDetailContent(uiState.pokemon, uiState.species, uiState.moves)
+                }
             }
         }
     }
@@ -57,7 +71,11 @@ private fun BackgroundHeader(
 }
 
 @Composable
-private fun PokemonDetailContent(pokemon: Pokemon, species: PokemonSpecies) {
+private fun PokemonDetailContent(
+    pokemon: Pokemon,
+    species: PokemonSpecies,
+    moves: List<Move>
+) {
     val typeThemeColor = Color(pokemon.types.first().color)
     val configuration = LocalConfiguration.current
     val bannerHeight = when (configuration.orientation) {
@@ -100,11 +118,11 @@ private fun PokemonDetailContent(pokemon: Pokemon, species: PokemonSpecies) {
 
                 Button(
                     shape = CircleShape,
-                    onClick = {  },
+                    onClick = { },
                     modifier = Modifier.padding(top = 8.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = typeThemeColor)
                 ) {
-                    Text(text = pokemon.types.first().type.name.uppercase())
+                    Text(text = pokemon.types.first().type.name.name.uppercase())
                 }
 
                 Text(
@@ -122,6 +140,7 @@ private fun PokemonDetailContent(pokemon: Pokemon, species: PokemonSpecies) {
 
                 DetailSectionControls(
                     pokemon = pokemon,
+                    moves = moves,
                     selectedColors = ButtonDefaults.buttonColors(backgroundColor = typeThemeColor),
                     unSelectedColors = ButtonDefaults.textButtonColors(contentColor = typeThemeColor),
                 )
@@ -156,7 +175,7 @@ private fun PokemonDetailCardPreview() {
         weight = 1,
         species = NamedApiResource(name = "Bulbasaur", ""),
         types = listOf(
-            PokemonType(1, NamedApiResource(name = "grass", ""))
+            PokemonType(1, TypeResource(name = TypeName.GRASS, ""))
         ),
         sprites = PokemonSprites(
             backDefault = null,
@@ -169,10 +188,11 @@ private fun PokemonDetailCardPreview() {
             frontShinyFemale = null
         ),
         stats = listOf(
-            PokemonStats(45, 0, NamedApiResource("hp", "")),
-            PokemonStats(49, 0, NamedApiResource("attack", "")),
-            PokemonStats(49, 0, NamedApiResource("defense", ""))
-        )
+            PokemonStats(45, 0, StatResource(StatName.HP, "")),
+            PokemonStats(49, 0, StatResource(StatName.Attack, "")),
+            PokemonStats(49, 0, StatResource(StatName.Defense, "")),
+        ),
+        moves = emptyList()
     )
 
     val species = PokemonSpecies(
@@ -188,5 +208,5 @@ private fun PokemonDetailCardPreview() {
             )
         )
     )
-    PokemonDetailContent(pokemon = bulbasaur, species = species)
+    PokemonDetailContent(pokemon = bulbasaur, species = species, moves = emptyList())
 }

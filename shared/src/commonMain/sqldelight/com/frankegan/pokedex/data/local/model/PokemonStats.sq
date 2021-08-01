@@ -1,9 +1,12 @@
+import com.frankegan.pokedex.model.StatName;
+
 CREATE TABLE pokemonStats (
     pokemonId INTEGER AS Int NOT NULL,
     baseStat INTEGER AS Int NOT NULL,
     effort INTEGER AS Int NOT NULL,
-    name TEXT NOT NULL,
-    url TEXT NOT NULL
+    name TEXT AS StatName NOT NULL,
+    url TEXT NOT NULL,
+    UNIQUE(pokemonId, name)
 );
 
 selectById:
@@ -12,7 +15,7 @@ FROM pokemonStats
 WHERE pokemonId = ?;
 
 insert:
-INSERT INTO pokemonStats(
+INSERT OR REPLACE INTO pokemonStats(
     pokemonId,
     baseStat,
     effort,

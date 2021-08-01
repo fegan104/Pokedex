@@ -24,7 +24,7 @@ CREATE TABLE pokemonSpeciesFlavorText (
 );
 
 insertPokemonSpecies:
-INSERT INTO pokemonSpecies(
+INSERT OR REPLACE INTO pokemonSpecies(
       id,
       name,
       colorName,
@@ -35,7 +35,7 @@ INSERT INTO pokemonSpecies(
 VALUES (?, ?, ?, ?, ?, ?);
 
 insertFlavorText:
-INSERT INTO pokemonSpeciesFlavorText(
+INSERT OR REPLACE INTO pokemonSpeciesFlavorText(
       pokemonSpeciesId,
       flavorText,
       versionName,

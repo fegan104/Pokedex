@@ -1,0 +1,90 @@
+import com.frankegan.pokedex.model.TypeName;
+
+
+CREATE TABLE pokemonMove (
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    accuracy INTEGER AS Int,
+    pp INTEGER AS Int,
+    priority INTEGER AS Int NOT NULL,
+    power INTEGER AS Int,
+    damageClassName TEXT NOT NULL,
+    damageClassUrl TEXT NOT NULL,
+    typeName TEXT AS TypeName NOT NULL,
+    typeUrl TEXT NOT NULL
+);
+
+CREATE TABLE pokemonToMove (
+    pokemonId INTEGER AS Int NOT NULL,
+    moveId INTEGER AS Int NOT NULL,
+    moveName TEXT NOT NULL,
+    moveUrl TEXT NOT NULL,
+    FOREIGN KEY (pokemonId) REFERENCES pokemon(id),
+    UNIQUE (pokemonId, moveId, moveName, moveUrl)
+);
+
+CREATE TABLE moveFlavorText (
+    moveId INTEGER AS Int NOT NULL,
+    flavorText TEXT NOT NULL,
+    languageName TEXT NOT NULL,
+    languageUrl TEXT NOT NULL,
+    versionGroupName TEXT NOT NULL,
+    versionGroupUrl TEXT NOT NULL,
+    FOREIGN KEY (moveId) REFERENCES pokemonMove(id)
+);
+
+CREATE TABLE moveName (
+    moveId INTEGER AS Int NOT NULL,
+    moveName TEXT NOT NULL,
+    languageName TEXT NOT NULL,
+    languageUrl TEXT NOT NULL,
+    UNIQUE (moveId, moveName, languageName),
+    UNIQUE (moveId, moveName, languageUrl),
+    FOREIGN KEY (moveId) REFERENCES pokemonMove(id)
+);
+
+inertMove:
+INSERT OR REPLACE INTO pokemonMove(
+    id,
+    name,
+    accuracy,
+    pp,
+    priority,
+    power,
+    damageClassName,
+    damageClassUrl,
+    typeName,
+    typeUrl
+)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+inertPokemonToMove:
+INSERT OR REPLACE INTO pokemonToMove(
+    pokemonId,
+    moveId,
+    moveName,
+    moveUrl
+)
+VALUES(?, ?, ?, ?);
+
+selectMoves:
+SELECT * FROM pokemonToMove
+JOIN pokemonMove, moveFlavorText, moveName
+WHERE pokemonToMove.pokemonId = :pokemonId
+AND pokemonToMove.moveId = pokemonMove.id
+AND pokemonToMove.moveId = moveFlavorText.moveId
+AND pokemonToMove.moveId = moveName.moveId
+GROUP BY moveFlavorText.languageName;
+
+selectPokemonMoves:
+SELECT moveName, moveUrl FROM pokemonToMove
+WHERE pokemonId = :pokemonid;
+
+insertMoveName:
+INSERT OR REPLACE INTO moveName(
+   moveId,
+   moveName,
+   languageName,
+   languageUrl
+)
+VALUES(?, ?, ?, ?);

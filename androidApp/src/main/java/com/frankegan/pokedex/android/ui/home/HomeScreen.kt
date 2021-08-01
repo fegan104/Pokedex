@@ -25,10 +25,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.frankegan.pokedex.android.ui.NavRoute
-import com.frankegan.pokedex.data.NamedApiResource
-import com.frankegan.pokedex.data.Pokemon
-import com.frankegan.pokedex.data.PokemonSprites
-import com.frankegan.pokedex.data.PokemonStats
+import com.frankegan.pokedex.model.*
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsHeight
@@ -173,10 +170,11 @@ private fun PokemonRowPreview() {
             frontShinyFemale = null
         ),
         stats = listOf(
-            PokemonStats(45, 0, NamedApiResource("hp", "")),
-            PokemonStats(45, 0, NamedApiResource("atk", "")),
-            PokemonStats(45, 0, NamedApiResource("def", ""))
-        )
+            PokemonStats(45, 0, StatResource(StatName.HP, "")),
+            PokemonStats(49, 0, StatResource(StatName.Attack, "")),
+            PokemonStats(49, 0, StatResource(StatName.Defense, "")),
+        ),
+        moves = emptyList()
     )
     PokemonRow(pokemon = bulbasaur) { }
 }

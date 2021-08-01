@@ -1,28 +1,43 @@
 package com.frankegan.pokedex.android.ui.pokemon_detail
 
-import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.frankegan.pokedex.data.PokemonRepository
-import java.lang.Exception
+import com.frankegan.pokedex.model.Move
+import com.frankegan.pokedex.model.Pokemon
+import com.frankegan.pokedex.model.PokemonSpecies
 
 class PokemonDetailViewModel(
     private val pokemonRepo: PokemonRepository
-): ViewModel() {
+) : ViewModel() {
 
-    fun pokemonAndSpecies(pokemonId: Int?) = liveData {
+    fun uiState(pokemonId: Int?): LiveData<UiState> = liveData {
+        emit(UiState.Loading)
         if (pokemonId == null) {
-            emit(null)
+            emit(UiState.Error("Missing Pokemon ID"))
             return@liveData
         }
         try {
             val pokemon = pokemonRepo.getPokemon(pokemonId)
             val species = pokemonRepo.getPokemonSpecies(pokemonId)
-            Log.d("PokemonDetailViewModel", pokemon.stats.toString())
-            emit(pokemon to species)
+            val moves = pokemonRepo.getMoves(pokemonId)
+
+            emit(UiState.Data(pokemon, species, moves))
         } catch (err: Exception) {
-            Log.e("PokemonDetailViewModel", err.localizedMessage, err)
-            emit(null)
+            emit(UiState.Error(err.localizedMessage))
         }
+    }
+
+    sealed class UiState {
+        object Loading : UiState()
+
+        data class Error(val msg: String? = "") : UiState()
+
+        data class Data(
+            val pokemon: Pokemon,
+            val species: PokemonSpecies,
+            val moves: List<Move>
+        ): UiState()
     }
 }

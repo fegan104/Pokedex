@@ -1,7 +1,6 @@
 package com.frankegan.pokedex.android.ui.pokemon_detail
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,14 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.frankegan.pokedex.android.R
-import com.frankegan.pokedex.data.Pokemon
-import java.util.*
+import com.frankegan.pokedex.model.Move
+import com.frankegan.pokedex.model.Pokemon
 
 private enum class Selection(@StringRes val displayName: Int) {
     Stats(R.string.stats),
@@ -32,6 +29,7 @@ private enum class Selection(@StringRes val displayName: Int) {
 @Composable
 fun DetailSectionControls(
     pokemon: Pokemon,
+    moves: List<Move>,
     modifier: Modifier = Modifier,
     selectedColors: ButtonColors = ButtonDefaults.buttonColors(),
     unSelectedColors: ButtonColors = ButtonDefaults.buttonColors()
@@ -92,22 +90,15 @@ fun DetailSectionControls(
                 )
             }
             Selection.Moves -> {
-                Text(
-                    text = """
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
-                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
-                    dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                    ollit anim id est laborum.
-                    """.trimIndent(),
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 24.dp)
-                )
+                PokemonMovesList(moves)
             }
         }
     }
+}
+
+@Composable
+fun PokemonMovesList(moves: List<Move>) {
+    Text(text = moves.joinToString { it.displayNames.first { it.language.name == "en" }.moveName })
 }
 
 @Composable
@@ -154,7 +145,7 @@ fun PokemonBaseStatsBars(pokemon: Pokemon) {
         for (stat in pokemon.stats) {
             Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = stat.stat.name.take(3).uppercase(),
+                    text = stat.stat.shortName,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start,
                     maxLines = 1,

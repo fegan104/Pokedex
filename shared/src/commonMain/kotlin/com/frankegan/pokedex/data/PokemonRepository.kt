@@ -2,6 +2,9 @@ package com.frankegan.pokedex.data
 
 import com.frankegan.pokedex.data.local.PokemonLocalDataSource
 import com.frankegan.pokedex.data.remote.PokemonRemoteDataSource
+import com.frankegan.pokedex.model.Move
+import com.frankegan.pokedex.model.Pokemon
+import com.frankegan.pokedex.model.PokemonSpecies
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -38,4 +41,16 @@ class PokemonRepository : PokemonDataSource, KoinComponent {
     override suspend fun savePokemon(pokemon: Pokemon): Pokemon = local.savePokemon(pokemon)
 
     override suspend fun savePokemonSpecies(species: PokemonSpecies): PokemonSpecies = local.savePokemonSpecies(species)
+
+    override suspend fun getMoves(pokemonId: Int): List<Move> {
+        return runCatching { local.getMoves(pokemonId) }.recoverCatching {
+            val moves = remote.getMoves(pokemonId)
+            local.saveMoves(moves)
+            moves
+        }.getOrThrow()
+    }
+
+    override suspend fun saveMoves(moves: List<Move>): List<Move> {
+        return local.saveMoves(moves)
+    }
 }
