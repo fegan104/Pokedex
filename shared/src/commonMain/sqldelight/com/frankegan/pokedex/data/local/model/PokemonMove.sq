@@ -28,18 +28,18 @@ CREATE TABLE moveFlavorText (
     flavorText TEXT NOT NULL,
     languageName TEXT NOT NULL,
     languageUrl TEXT NOT NULL,
-    versionGroupName TEXT NOT NULL,
-    versionGroupUrl TEXT NOT NULL,
-    FOREIGN KEY (moveId) REFERENCES pokemonMove(id)
+    FOREIGN KEY (moveId) REFERENCES pokemonMove(id),
+    UNIQUE (moveId, flavorText, languageName),
+    UNIQUE (moveId, flavorText, languageUrl)
 );
 
 CREATE TABLE moveName (
     moveId INTEGER AS Int NOT NULL,
-    moveName TEXT NOT NULL,
+    displayName TEXT NOT NULL,
     languageName TEXT NOT NULL,
     languageUrl TEXT NOT NULL,
-    UNIQUE (moveId, moveName, languageName),
-    UNIQUE (moveId, moveName, languageUrl),
+    UNIQUE (moveId, displayName, languageName),
+    UNIQUE (moveId, displayName, languageUrl),
     FOREIGN KEY (moveId) REFERENCES pokemonMove(id)
 );
 
@@ -68,13 +68,16 @@ INSERT OR REPLACE INTO pokemonToMove(
 VALUES(?, ?, ?, ?);
 
 selectMoves:
-SELECT * FROM pokemonToMove
-JOIN pokemonMove, moveFlavorText, moveName
-WHERE pokemonToMove.pokemonId = :pokemonId
-AND pokemonToMove.moveId = pokemonMove.id
-AND pokemonToMove.moveId = moveFlavorText.moveId
-AND pokemonToMove.moveId = moveName.moveId
-GROUP BY moveFlavorText.languageName;
+SELECT *
+ FROM pokemonToMove
+LEFT OUTER JOIN pokemonMove
+ ON pokemonToMove.pokemonId = :pokemonId
+ AND pokemonToMove.moveId = pokemonMove.id
+LEFT OUTER JOIN moveFlavorText
+ ON pokemonMove.id = moveFlavorText.moveId
+LEFT OUTER JOIN moveName
+ ON pokemonMove.id = moveName.moveId
+WHERE moveName.languageName = moveFlavorText.languageName;
 
 selectPokemonMoves:
 SELECT moveName, moveUrl FROM pokemonToMove
@@ -83,8 +86,17 @@ WHERE pokemonId = :pokemonid;
 insertMoveName:
 INSERT OR REPLACE INTO moveName(
    moveId,
-   moveName,
+   displayName,
    languageName,
    languageUrl
+)
+VALUES(?, ?, ?, ?);
+
+insertMoveFlavorText:
+INSERT OR REPLACE INTO moveFlavorText(
+    moveId,
+    flavorText,
+    languageName,
+    languageUrl
 )
 VALUES(?, ?, ?, ?);

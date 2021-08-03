@@ -191,6 +191,9 @@ private fun PokemonDetailCardPreview() {
             PokemonStats(45, 0, StatResource(StatName.HP, "")),
             PokemonStats(49, 0, StatResource(StatName.Attack, "")),
             PokemonStats(49, 0, StatResource(StatName.Defense, "")),
+            PokemonStats(49, 0, StatResource(StatName.SpecialAttack, "")),
+            PokemonStats(49, 0, StatResource(StatName.SpecialDefense, "")),
+            PokemonStats(49, 0, StatResource(StatName.Speed, "")),
         ),
         moves = emptyList()
     )

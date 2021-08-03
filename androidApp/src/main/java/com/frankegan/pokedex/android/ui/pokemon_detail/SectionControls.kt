@@ -98,7 +98,7 @@ fun DetailSectionControls(
 
 @Composable
 fun PokemonMovesList(moves: List<Move>) {
-    Text(text = moves.joinToString { it.displayNames.first { it.language.name == "en" }.moveName })
+    Text(text = moves.joinToString { it.displayNames.first { it.language.name == "en" }.displayName })
 }
 
 @Composable
@@ -151,7 +151,7 @@ fun PokemonBaseStatsBars(pokemon: Pokemon) {
                     maxLines = 1,
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
-                        .fillMaxWidth(0.1f)
+                        .fillMaxWidth(0.125f)
                 )
                 Text(
                     text = stat.baseStat.toString().padStart(3, '0'),
@@ -163,11 +163,11 @@ fun PokemonBaseStatsBars(pokemon: Pokemon) {
                         .fillMaxWidth(0.1f)
                 )
                 LinearProgressIndicator(
-                    progress = stat.baseStat / 255f,
+                    progress = stat.baseStatAsPercentageOfMax,
                     color = color,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxWidth(0.8f)
+                        .fillMaxWidth(0.775f)
                         .clip(RoundedCornerShape(8.dp))
                         .height(8.dp)
                 )

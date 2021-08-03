@@ -24,9 +24,7 @@ data class Move(
 data class MoveFlavorText(
     @SerialName("flavor_text")
     val flavorText: String,
-    val language: NamedApiResource,
-    @SerialName("version_group")
-    val versionGroup: NamedApiResource
+    val language: NamedApiResource
 )
 
 @Serializable
@@ -42,5 +40,5 @@ data class MoveResource(
 data class MoveName(
     val language: NamedApiResource,
     @SerialName("name")
-    val moveName: String
+    val displayName: String
 )

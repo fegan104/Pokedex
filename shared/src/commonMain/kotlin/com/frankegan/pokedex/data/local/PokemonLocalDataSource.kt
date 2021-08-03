@@ -7,8 +7,8 @@ import com.frankegan.pokedex.model.*
 import com.squareup.sqldelight.EnumColumnAdapter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import com.frankegan.pokedex.data.local.model.PokemonType.Adapter as PokemonTypeAdapter
 import com.frankegan.pokedex.data.local.model.PokemonStats.Adapter as PokemonStatsAdapter
+import com.frankegan.pokedex.data.local.model.PokemonType.Adapter as PokemonTypeAdapter
 
 class PokemonLocalDataSource(
     databaseDriverFactory: DatabaseDriverFactory,
@@ -200,30 +200,33 @@ class PokemonLocalDataSource(
 
     override suspend fun getMoves(pokemonId: Int): List<Move> {
         return appDatabase.transactionWithContext(dispatcher) {
-            pokemonMoveQueries.selectMoves(pokemonId).executeAsList()
+            val foo = pokemonMoveQueries.selectMoves(pokemonId).executeAsList()
+            foo
                 .groupBy(
                     keySelector = {
                         Move(
                             id = it.moveId,
-                            name = it.name,
+                            name = it.moveName,
                             displayNames = emptyList(),
                             accuracy = it.accuracy,
                             pp = it.pp,
-                            priority = it.priority,
+                            priority = it.priority!!,
                             power = it.power,
-                            damageClass = NamedApiResource(it.damageClassName, it.damageClassUrl),
+                            damageClass = NamedApiResource(
+                                it.damageClassName!!,
+                                it.damageClassUrl!!
+                            ),
                             flavorTextEntries = emptyList(),
-                            type = TypeResource(it.typeName, it.typeUrl)
+                            type = TypeResource(it.typeName!!, it.typeUrl!!)
                         )
                     },
                     valueTransform = {
                         MoveFlavorText(
-                            it.flavorText,
-                            NamedApiResource(it.languageName, it.languageUrl),
-                            NamedApiResource(it.versionGroupName, it.versionGroupUrl)
+                            it.flavorText!!,
+                            NamedApiResource(it.languageName!!, it.languageUrl!!)
                         ) to MoveName(
                             language = NamedApiResource(it.languageName, it.languageName),
-                            moveName = it.moveName
+                            displayName = it.displayName!!
                         )
                     })
                 .map { moveToFlavorText ->
@@ -252,12 +255,21 @@ class PokemonLocalDataSource(
                     move.type.url
                 )
 
+                for (flavorText in move.flavorTextEntries) {
+                    pokemonMoveQueries.insertMoveFlavorText(
+                        move.id,
+                        flavorText.flavorText,
+                        flavorText.language.name,
+                        flavorText.language.url
+                    )
+                }
+
                 for (name in move.displayNames) {
                     pokemonMoveQueries.insertMoveName(
                         move.id,
-                        moveName = name.moveName,
+                        displayName = name.displayName,
                         languageName = name.language.name,
-                        languageUrl= name.language.url
+                        languageUrl = name.language.url
                     )
                 }
             }

@@ -63,7 +63,9 @@ data class PokemonStats(
     val baseStat: Int,
     val effort: Int,
     val stat: StatResource
-)
+) {
+    val baseStatAsPercentageOfMax: Float = baseStat / 255f
+}
 
 @Serializable
 data class StatResource(
@@ -79,25 +81,30 @@ enum class StatName {
     HP {
         override val shortName: String = "HP"
     },
+
     @SerialName("attack")
     Attack {
         override val shortName: String = "ATK"
     },
+
     @SerialName("defense")
     Defense {
         override val shortName: String = "DEF"
     },
+
     @SerialName("special-attack")
     SpecialAttack {
-        override val shortName: String = "SPA"
+        override val shortName: String = "SATK"
     },
+
     @SerialName("special-defense")
     SpecialDefense {
-        override val shortName: String = "SPD"
+        override val shortName: String = "SDEF"
     },
+
     @SerialName("speed")
     Speed {
-        override val shortName: String = "SPE"
+        override val shortName: String = "SPD"
     };
 
     abstract val shortName: String
