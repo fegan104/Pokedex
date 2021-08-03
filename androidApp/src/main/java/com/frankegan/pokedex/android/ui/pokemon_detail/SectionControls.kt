@@ -2,6 +2,7 @@ package com.frankegan.pokedex.android.ui.pokemon_detail
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -10,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -17,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.frankegan.pokedex.android.R
+import com.frankegan.pokedex.android.ui.common.TypeButton
 import com.frankegan.pokedex.model.Move
 import com.frankegan.pokedex.model.Pokemon
 
@@ -98,7 +101,35 @@ fun DetailSectionControls(
 
 @Composable
 fun PokemonMovesList(moves: List<Move>) {
-    Text(text = moves.joinToString { it.displayNames.first { it.language.name == "en" }.displayName })
+    val englishDisplayNames = remember {
+        moves.map { move ->
+            move.displayNames.first { it.language.name == "en" }.displayName
+        }
+    }
+    LazyColumn(Modifier.fillMaxHeight()) {
+        items(englishDisplayNames.size) { index ->
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .height(72.dp)
+                        .padding(16.dp)
+                ) {
+                    Text(text = englishDisplayNames[index])
+                    Spacer(modifier = Modifier.weight(1f))
+                    TypeButton(type = moves[index].type.name)
+                }
+                Divider(
+                    color = Color.LightGray,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .alpha(0.6f)
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth()
+                )
+            }
+        }
+    }
 }
 
 @Composable

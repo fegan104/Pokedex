@@ -200,8 +200,8 @@ class PokemonLocalDataSource(
 
     override suspend fun getMoves(pokemonId: Int): List<Move> {
         return appDatabase.transactionWithContext(dispatcher) {
-            val foo = pokemonMoveQueries.selectMoves(pokemonId).executeAsList()
-            foo
+            pokemonMoveQueries.selectMoves(pokemonId)
+                .executeAsList()
                 .groupBy(
                     keySelector = {
                         Move(

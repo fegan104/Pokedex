@@ -104,7 +104,7 @@ private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .clickable { onClick() }
         ) {
-            val (number, name, sprite, divider) = createRefs()
+            val (number, name, sprite) = createRefs()
 
             Text(
                 text = pokemon.formattedNumber,

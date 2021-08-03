@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.frankegan.pokedex.android.R
+import com.frankegan.pokedex.android.ui.common.TypeButton
 import com.frankegan.pokedex.model.*
 import com.google.accompanist.coil.rememberCoilPainter
 
@@ -116,14 +117,7 @@ private fun PokemonDetailContent(
                     modifier = Modifier.padding(top = 32.dp)
                 )
 
-                Button(
-                    shape = CircleShape,
-                    onClick = { },
-                    modifier = Modifier.padding(top = 8.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = typeThemeColor)
-                ) {
-                    Text(text = pokemon.types.first().type.name.name.uppercase())
-                }
+                TypeButton(type = pokemon.types.first().type.name)
 
                 Text(
                     text = species.flavorTextEntries
