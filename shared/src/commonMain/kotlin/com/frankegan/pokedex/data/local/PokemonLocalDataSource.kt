@@ -200,6 +200,7 @@ class PokemonLocalDataSource(
 
     override suspend fun getMoves(pokemonId: Int): List<Move> {
         return appDatabase.transactionWithContext(dispatcher) {
+            val numMoves = pokemonMoveQueries.selectPokemonMoves(pokemonId).executeAsList().size
             pokemonMoveQueries.selectMoves(pokemonId)
                 .executeAsList()
                 .groupBy(
@@ -235,7 +236,7 @@ class PokemonLocalDataSource(
                         flavorTextEntries = flavorTextAndMoveName.map { it.first },
                         displayNames = flavorTextAndMoveName.map { it.second }
                     )
-                }.throwIfEmpty()
+                }.throwIfNotSize(numMoves)
         }
     }
 
@@ -320,6 +321,13 @@ class DataNotFoundError : Error("No data found")
 private fun <T> List<T>.throwIfEmpty(): List<T> {
     return when {
         isEmpty() -> throw DataNotFoundError()
+        else -> this
+    }
+}
+
+private fun <T> List<T>.throwIfNotSize(size: Int): List<T> {
+    return when {
+        this.size != size -> throw DataNotFoundError()
         else -> this
     }
 }

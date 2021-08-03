@@ -102,12 +102,26 @@ fun DetailSectionControls(
 
 @Composable
 fun PokemonMovesList(moves: List<Move>) {
+    if (moves.isEmpty()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
     val englishDisplayNames = remember {
         moves.map { move ->
             move.displayNames.first { it.language.name == "en" }.displayName
         }
     }
-    Column(Modifier.wrapContentHeight().padding(bottom = 72.dp)) {
+    Column(
+        Modifier
+            .wrapContentHeight()
+            .padding(bottom = 72.dp)) {
         for(index in moves.indices) {
             MoveRow(englishDisplayNames[index], moves[index])
         }

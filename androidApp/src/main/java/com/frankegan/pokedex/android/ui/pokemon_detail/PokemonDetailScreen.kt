@@ -154,7 +154,7 @@ private fun PokemonDetailContent(
             modifier = Modifier
                 .height(bannerHeight)
                 .width(bannerHeight)
-                .padding(bottom = max(0.dp, scrollState.value.dp))
+                .absoluteOffset(y = -scrollState.value.dp)
                 .constrainAs(imageRef) {
                     bottom.linkTo(bottomCardRef.top, margin = -(bannerHeight + 40.dp))
                     start.linkTo(parent.start)
