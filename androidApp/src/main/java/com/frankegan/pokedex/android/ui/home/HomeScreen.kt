@@ -1,21 +1,17 @@
 package com.frankegan.pokedex.android.ui.home
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -100,35 +96,31 @@ fun HomeScreen(lazyPagingItems: LazyPagingItems<Pokemon>, navController: NavCont
 
 @Composable
 private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
-    val cardShape = remember { RoundedCornerShape(12.dp) }
-    Card(
-        elevation = 0.dp,
-        shape = cardShape,
-        border = BorderStroke(2.dp, MaterialTheme.colors.primary),
-        modifier = Modifier
-            .height(96.dp)
-            .padding(8.dp)
-            .fillMaxWidth()
-            .clip(cardShape)
-            .clickable { onClick() }
-    ) {
-        ConstraintLayout {
-            val (number, name, sprite) = createRefs()
+    Column {
+        ConstraintLayout(
+            modifier = Modifier
+                .height(72.dp)
+                .padding(top = 8.dp)
+                .fillMaxWidth()
+                .clickable { onClick() }
+        ) {
+            val (number, name, sprite, divider) = createRefs()
 
             Text(
                 text = pokemon.formattedNumber,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.constrainAs(number) {
+                modifier = Modifier
+                    .alpha(0.72f)
+                    .constrainAs(number) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 16.dp)
                 }
             )
             Text(
                 text = pokemon.name.replaceFirstChar { it.titlecase() },
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.constrainAs(name) {
-                    start.linkTo(number.end, margin = 16.dp)
+                    start.linkTo(sprite.end, margin = 16.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 }
@@ -140,16 +132,25 @@ private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
                     .constrainAs(sprite) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
+                        start.linkTo(parent.start, margin = 16.dp)
                     }
-                    .width(100.dp)
+                    .width(56.dp)
+                    .height(56.dp)
                     .fillMaxHeight()
             )
         }
+        Divider(
+            color = Color.LightGray,
+            thickness = 1.dp,
+            modifier = Modifier
+                .alpha(0.6f)
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        )
     }
 }
 
-@Preview(heightDp = 100)
+@Preview(heightDp = 100, showBackground = true)
 @Composable
 private fun PokemonRowPreview() {
     val bulbasaur = Pokemon(
