@@ -96,13 +96,13 @@ fun HomeScreen(lazyPagingItems: LazyPagingItems<Pokemon>, navController: NavCont
 
 @Composable
 private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
-    Column {
+    Column(
+        Modifier.clickable { onClick() }
+    ) {
         ConstraintLayout(
             modifier = Modifier
-                .height(72.dp)
-                .padding(top = 8.dp)
+                .padding(vertical = 8.dp)
                 .fillMaxWidth()
-                .clickable { onClick() }
         ) {
             val (number, name, sprite) = createRefs()
 
@@ -111,10 +111,10 @@ private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
                 modifier = Modifier
                     .alpha(0.72f)
                     .constrainAs(number) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end, margin = 16.dp)
-                }
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    }
             )
             Text(
                 text = pokemon.name.replaceFirstChar { it.titlecase() },
@@ -144,13 +144,12 @@ private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
             thickness = 1.dp,
             modifier = Modifier
                 .alpha(0.6f)
-                .padding(horizontal = 8.dp)
                 .fillMaxWidth()
         )
     }
 }
 
-@Preview(heightDp = 100, showBackground = true)
+@Preview(heightDp = 73, showBackground = true)
 @Composable
 private fun PokemonRowPreview() {
     val bulbasaur = Pokemon(

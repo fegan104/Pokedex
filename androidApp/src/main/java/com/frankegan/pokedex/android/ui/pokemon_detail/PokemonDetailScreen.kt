@@ -3,9 +3,11 @@ package com.frankegan.pokedex.android.ui.pokemon_detail
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +19,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.frankegan.pokedex.android.R
 import com.frankegan.pokedex.android.ui.common.TypeButton
@@ -88,6 +91,7 @@ private fun PokemonDetailContent(
         modifier = Modifier.fillMaxSize()
     ) {
         val (imageRef, bottomCardRef) = createRefs()
+        val scrollState = rememberScrollState()
 
         BackgroundHeader(
             modifier = Modifier
@@ -102,13 +106,13 @@ private fun PokemonDetailContent(
                 bottomEnd = CornerSize(0)
             ),
             modifier = Modifier
-                .padding(top = bannerHeight - 20.dp)
-                .fillMaxSize()
+                .padding(top = max(0.dp, bannerHeight - 20.dp - scrollState.value.dp))
+                .wrapContentHeight()
                 .constrainAs(bottomCardRef) { }
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
+                modifier = Modifier.verticalScroll(scrollState)
             ) {
 
                 Text(
@@ -150,6 +154,7 @@ private fun PokemonDetailContent(
             modifier = Modifier
                 .height(bannerHeight)
                 .width(bannerHeight)
+                .padding(bottom = max(0.dp, scrollState.value.dp))
                 .constrainAs(imageRef) {
                     bottom.linkTo(bottomCardRef.top, margin = -(bannerHeight + 40.dp))
                     start.linkTo(parent.start)

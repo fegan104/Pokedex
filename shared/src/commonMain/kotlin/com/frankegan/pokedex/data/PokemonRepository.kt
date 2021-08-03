@@ -45,7 +45,6 @@ class PokemonRepository : PokemonDataSource, KoinComponent {
 
     override suspend fun getMoves(pokemonId: Int): List<Move> {
         return runCatching { local.getMoves(pokemonId) }
-            .onFailure { println("❌ failed to get move locally $it") }
             .recoverCatching {
                 val moves = remote.getMoves(pokemonId)
                 local.saveMoves(moves)
