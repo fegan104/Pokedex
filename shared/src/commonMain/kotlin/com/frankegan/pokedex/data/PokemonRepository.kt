@@ -1,5 +1,6 @@
 package com.frankegan.pokedex.data
 
+import com.frankegan.pokedex.data.local.IncompleteDataException
 import com.frankegan.pokedex.data.local.PokemonLocalDataSource
 import com.frankegan.pokedex.data.remote.PokemonRemoteDataSource
 import com.frankegan.pokedex.model.Move
@@ -44,12 +45,25 @@ class PokemonRepository : PokemonDataSource, KoinComponent {
         local.savePokemonSpecies(species)
 
     override suspend fun getMoves(pokemonId: Int): List<Move> {
-        return runCatching { local.getMoves(pokemonId) }
-            .recoverCatching {
-                val moves = remote.getMoves(pokemonId)
-                local.saveMoves(moves)
-                moves
-            }.getOrThrow()
+        val pokemonMoves = getPokemon(pokemonId).moves.map { it.move.id }
+        return getMoves(pokemonId, pokemonMoves)
+    }
+
+    override suspend fun getMoves(pokemonId: Int, moveIds: List<Int>): List<Move> {
+        val result = runCatching { local.getMoves(pokemonId, moveIds) }
+            .recoverCatching { err ->
+                if (err is IncompleteDataException) {
+                    val remoteMoves = remote.getMoves(pokemonId, err.missingData)
+                    local.saveMoves(remoteMoves)
+                    err.localData + remoteMoves
+                } else {
+                    val moves = remote.getMoves(pokemonId, moveIds)
+                    local.saveMoves(moves)
+                    moves
+                }
+            }
+
+        return result.getOrThrow()
     }
 
     override suspend fun saveMoves(moves: List<Move>): List<Move> {

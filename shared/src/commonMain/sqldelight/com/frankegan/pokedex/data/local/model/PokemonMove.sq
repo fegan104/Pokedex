@@ -67,7 +67,7 @@ INSERT OR REPLACE INTO pokemonToMove(
 )
 VALUES(?, ?, ?, ?);
 
-selectMoves:
+selectMovesByPokemonId:
 SELECT *
  FROM pokemonToMove
 LEFT OUTER JOIN pokemonMove
@@ -79,8 +79,33 @@ LEFT OUTER JOIN moveName
  ON pokemonMove.id = moveName.moveId
 WHERE moveName.languageName = moveFlavorText.languageName;
 
+selectMovesByMoveId:
+SELECT *
+ FROM pokemonToMove
+LEFT OUTER JOIN pokemonMove
+ ON pokemonToMove.pokemonId = :pokemonId
+ AND pokemonToMove.moveId = pokemonMove.id
+LEFT OUTER JOIN moveFlavorText
+ ON pokemonMove.id = moveFlavorText.moveId
+LEFT OUTER JOIN moveName
+ ON pokemonMove.id = moveName.moveId
+WHERE moveName.languageName = moveFlavorText.languageName
+AND pokemonToMove.moveId IN :moveIds;
+
 selectPokemonMoves:
 SELECT moveName, moveUrl FROM pokemonToMove
+WHERE pokemonId = :pokemonid;
+
+countMovesByPokemon:
+SELECT COUNT(*) AS Int FROM pokemonToMove
+WHERE pokemonId = :pokemonid;
+
+selectMoveIdAndUrlByPokemonId:
+SELECT moveId, moveUrl FROM pokemonToMove
+WHERE pokemonId = :pokemonid;
+
+selectMoveIdByPokemonId:
+SELECT moveId FROM pokemonToMove
 WHERE pokemonId = :pokemonid;
 
 insertMoveName:

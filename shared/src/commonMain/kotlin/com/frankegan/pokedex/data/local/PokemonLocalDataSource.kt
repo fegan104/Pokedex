@@ -199,9 +199,16 @@ class PokemonLocalDataSource(
     }
 
     override suspend fun getMoves(pokemonId: Int): List<Move> {
+        val pokemonMoves = appDatabase.transactionWithContext(dispatcher) {
+            pokemonMoveQueries.selectMoveIdByPokemonId(pokemonId).executeAsList()
+        }
+
+        return getMoves(pokemonId, pokemonMoves)
+    }
+
+    override suspend fun getMoves(pokemonId: Int, moveIds: List<Int>): List<Move> {
         return appDatabase.transactionWithContext(dispatcher) {
-            val numMoves = pokemonMoveQueries.selectPokemonMoves(pokemonId).executeAsList().size
-            pokemonMoveQueries.selectMoves(pokemonId)
+            pokemonMoveQueries.selectMovesByMoveId(pokemonId, moveIds)
                 .executeAsList()
                 .groupBy(
                     keySelector = {
@@ -236,7 +243,7 @@ class PokemonLocalDataSource(
                         flavorTextEntries = flavorTextAndMoveName.map { it.first },
                         displayNames = flavorTextAndMoveName.map { it.second }
                     )
-                }.throwIfNotSize(numMoves)
+                }.throwIfSizeMismatch(moveIds)
         }
     }
 
@@ -318,6 +325,11 @@ class PokemonLocalDataSource(
 
 class DataNotFoundError : Error("No data found")
 
+class IncompleteDataException(
+    val localData: List<Move>,
+    val missingData: List<Int>
+) : Error("Not all data found")
+
 private fun <T> List<T>.throwIfEmpty(): List<T> {
     return when {
         isEmpty() -> throw DataNotFoundError()
@@ -325,9 +337,16 @@ private fun <T> List<T>.throwIfEmpty(): List<T> {
     }
 }
 
-private fun <T> List<T>.throwIfNotSize(size: Int): List<T> {
+private fun List<Move>.throwIfSizeMismatch(
+    requestedMoveIds: List<Int>
+): List<Move> {
+    val locallyCachedMoveIds = this.map { it.id }
     return when {
-        this.size != size -> throw DataNotFoundError()
+        locallyCachedMoveIds.size != requestedMoveIds.size -> throw IncompleteDataException(
+            localData = this,
+            missingData = requestedMoveIds.filter { it !in locallyCachedMoveIds }
+        )
         else -> this
     }
 }
+

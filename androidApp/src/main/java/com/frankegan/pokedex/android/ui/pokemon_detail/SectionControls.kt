@@ -121,7 +121,8 @@ fun PokemonMovesList(moves: List<Move>) {
     Column(
         Modifier
             .wrapContentHeight()
-            .padding(bottom = 72.dp)) {
+            .padding(bottom = 72.dp)
+    ) {
         for(index in moves.indices) {
             MoveRow(englishDisplayNames[index], moves[index])
         }

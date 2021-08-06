@@ -26,6 +26,9 @@ interface PokemonDataSource {
     suspend fun getMoves(pokemonId: Int): List<Move>
 
     @Throws(Exception::class)
+    suspend fun getMoves(pokemonId: Int, moveIds: List<Int>): List<Move>
+
+    @Throws(Exception::class)
     suspend fun saveMoves(moves: List<Move>): List<Move>
 
     companion object {

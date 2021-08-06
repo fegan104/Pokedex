@@ -2,9 +2,12 @@ package com.frankegan.pokedex.data.remote
 
 import com.frankegan.pokedex.data.PokemonDataSource
 import com.frankegan.pokedex.data.PokemonDataSource.Companion.PAGE_SIZE
-import com.frankegan.pokedex.model.*
-import io.ktor.client.HttpClient
-import io.ktor.client.request.get
+import com.frankegan.pokedex.model.Move
+import com.frankegan.pokedex.model.NamedApiResourceList
+import com.frankegan.pokedex.model.Pokemon
+import com.frankegan.pokedex.model.PokemonSpecies
+import io.ktor.client.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.*
 
 private const val ENDPOINT = "https://pokeapi.co/api/v2"
@@ -45,6 +48,12 @@ class PokemonRemoteDataSource(
     override suspend fun getMoves(pokemonId: Int): List<Move> = withContext(dispatcher) {
         val pokemon = getPokemon(pokemonId)
         pokemon.moves.mapAsync { httpClient.get(it.move.url) }
+    }
+
+    override suspend fun getMoves(pokemonId: Int, moveIds: List<Int>): List<Move> {
+        return moveIds.mapAsync { moveId ->
+            httpClient.get("$ENDPOINT/move/$moveId")
+        }
     }
 
     override suspend fun saveMoves(moves: List<Move>): List<Move> {

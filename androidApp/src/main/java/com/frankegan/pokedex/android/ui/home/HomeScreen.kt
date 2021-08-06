@@ -144,6 +144,7 @@ private fun PokemonRow(pokemon: Pokemon, onClick: () -> Unit) {
             thickness = 1.dp,
             modifier = Modifier
                 .alpha(0.6f)
+                .padding(horizontal = 8.dp)
                 .fillMaxWidth()
         )
     }
