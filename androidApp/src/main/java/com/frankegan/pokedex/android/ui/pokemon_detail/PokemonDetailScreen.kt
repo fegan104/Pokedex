@@ -116,7 +116,10 @@ private fun PokemonDetailContent(
             ) {
 
                 Text(
-                    text = pokemon.name.replaceFirstChar { it.uppercase() },
+                    text = species.displayNames
+                        .first { it.language.name == "en" }
+                        .displayName
+                        .replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.h3,
                     modifier = Modifier.padding(top = 32.dp)
                 )
@@ -125,10 +128,9 @@ private fun PokemonDetailContent(
 
                 Text(
                     text = species.flavorTextEntries
-                        .firstOrNull()
-                        ?.flavorText
-                        ?.replace("[\\t\\n\\f]+".toRegex(), " ")
-                        ?: species.flavorTextEntries.toString(),
+                        .first { it.language.name == "en" }
+                        .flavorText
+                        .replace("[\\t\\n\\f]+".toRegex(), " "),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -207,6 +209,12 @@ private fun PokemonDetailCardPreview() {
                 language = NamedApiResource(name = "en", ""),
                 version = NamedApiResource(name = "version", ""),
                 flavorText = "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON."
+            )
+        ),
+        displayNames = listOf(
+            SpeciesName(
+                NamedApiResource("en", ""),
+                "Bulbasaur"
             )
         )
     )

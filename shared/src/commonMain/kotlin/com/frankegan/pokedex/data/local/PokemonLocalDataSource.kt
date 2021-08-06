@@ -90,27 +90,34 @@ class PokemonLocalDataSource(
 
     override suspend fun getPokemonSpecies(id: Int): PokemonSpecies {
         return appDatabase.transactionWithContext(dispatcher) {
-            val pokemonSpeciesQuery =
-                pokemonSpeciesQueries.selectSpeciesByPokemonId(id) { _, name, colorName, colorUrl, generationName, generationUrl ->
-                    val flavorTextEntries =
-                        pokemonSpeciesQueries.selectFlavorTextByPokemonId(id) { _, flavorText, versionName, versionUrl, languageName, languageUrl ->
-                            PokemonSpeciesFlavorText(
-                                flavorText = flavorText,
-                                language = NamedApiResource(name = languageName, url = languageUrl),
-                                version = NamedApiResource(name = versionName, url = versionUrl)
-                            )
-                        }.executeAsList()
-
-                    PokemonSpecies(
-                        id = id,
-                        name = name,
-                        color = NamedApiResource(name = colorName, colorUrl),
-                        generation = NamedApiResource(name = generationName, url = generationUrl),
-                        flavorTextEntries = flavorTextEntries
+            pokemonSpeciesQueries.selectSpeciesByPokemonId(id) { _, name, colorName, colorUrl, generationName, generationUrl, _, flavorText, versionName, versionUrl, languageName, languageUrl, _, displayName, _, _ ->
+                PokemonSpecies(
+                    id,
+                    name = name,
+                    displayNames = listOf(
+                        SpeciesName(
+                            NamedApiResource(languageName!!, languageUrl!!),
+                            displayName!!
+                        )
+                    ),
+                    color = NamedApiResource(colorName, colorUrl),
+                    generation = NamedApiResource(generationName, generationUrl),
+                    flavorTextEntries = listOf(
+                        PokemonSpeciesFlavorText(
+                            flavorText!!,
+                            language = NamedApiResource(languageName, languageUrl),
+                            version = NamedApiResource(versionName!!, versionUrl!!)
+                        )
+                    )
+                )
+            }
+                .executeAsList()
+                .reduce { acc, next ->
+                    acc.copy(
+                        flavorTextEntries = acc.flavorTextEntries + next.flavorTextEntries,
+                        displayNames = acc.displayNames + next.displayNames
                     )
                 }
-
-            pokemonSpeciesQuery.executeAsOne()
         }
     }
 
@@ -181,6 +188,15 @@ class PokemonLocalDataSource(
                 generationName = species.generation.name,
                 generationUrl = species.generation.url
             )
+
+            for (name in species.displayNames) {
+                pokemonSpeciesQueries.insertDisplayName(
+                    species.id,
+                    name.displayName,
+                    name.language.name,
+                    name.language.url
+                )
+            }
 
 
             for (flavorText in species.flavorTextEntries) {

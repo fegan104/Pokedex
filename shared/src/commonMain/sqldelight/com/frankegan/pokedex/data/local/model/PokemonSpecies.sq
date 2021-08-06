@@ -23,6 +23,14 @@ CREATE TABLE pokemonSpeciesFlavorText (
     FOREIGN KEY(pokemonSpeciesId) REFERENCES pokemonSpecies(id)
 );
 
+CREATE TABLE pokemonSpeciesDisplayName (
+    pokemonSpeciesId INTEGER AS Int NOT NULL,
+    displayName TEXT NOT NULL,
+    languageName TEXT NOT NULL,
+    languageUrl TEXT NOT NULL,
+    FOREIGN KEY(pokemonSpeciesId) REFERENCES pokemonSpecies(id)
+);
+
 insertPokemonSpecies:
 INSERT OR REPLACE INTO pokemonSpecies(
       id,
@@ -45,13 +53,21 @@ INSERT OR REPLACE INTO pokemonSpeciesFlavorText(
 )
 VALUES (?, ?, ?, ?, ?, ?);
 
+insertDisplayName:
+INSERT OR REPLACE INTO pokemonSpeciesDisplayName(
+      pokemonSpeciesId,
+      displayName,
+      languageName,
+      languageUrl
+)
+VALUES (?, ?, ?, ?);
+
 selectSpeciesByPokemonId:
 SELECT *
-FROM pokemonSpecies
-WHERE id = ?
-LIMIT 1;
-
-selectFlavorTextByPokemonId:
-SELECT *
-FROM pokemonSpeciesFlavorText
-WHERE pokemonSpeciesId = ?;
+FROM pokemonSpecies AS species
+LEFT OUTER JOIN pokemonSpeciesFlavorText AS flavorText
+ ON flavorText.pokemonSpeciesId = species.id
+ AND species.id = :pokemonId
+LEFT OUTER JOIN pokemonSpeciesDisplayName AS displayNames
+ ON species.id = displayNames.pokemonSpeciesId
+WHERE displayNames.languageName = flavorText.languageName;

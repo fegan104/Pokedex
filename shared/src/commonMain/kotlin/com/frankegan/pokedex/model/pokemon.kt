@@ -43,10 +43,20 @@ data class PokemonSprites(
 data class PokemonSpecies(
     val id: Int,
     val name: String,
+    @SerialName("names")
+    val displayNames: List<SpeciesName>,
     val color: NamedApiResource,
     val generation: NamedApiResource,
     @SerialName("flavor_text_entries")
     val flavorTextEntries: List<PokemonSpeciesFlavorText>
+)
+
+@Serializable
+
+data class SpeciesName(
+    val language: NamedApiResource,
+    @SerialName("name")
+    val displayName: String
 )
 
 @Serializable
