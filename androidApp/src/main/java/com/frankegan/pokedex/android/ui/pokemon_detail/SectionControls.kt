@@ -115,7 +115,7 @@ fun PokemonMovesList(moves: List<Move>) {
     }
     val englishDisplayNames = remember {
         moves.map { move ->
-            move.displayNames.first { it.language.name == "en" }.displayName
+            move.displayNames.first().displayName
         }
     }
     Column(
@@ -133,7 +133,7 @@ fun PokemonMovesList(moves: List<Move>) {
 fun MoveRow(displayName: String, move: Move) {
     var showFlavorText by remember { mutableStateOf(false) }
     val englishFlavorText = remember {
-        move.flavorTextEntries.first { it.language.name == "en" }.flavorText
+        move.flavorTextEntries.first().flavorText
     }
     val flavorTextHeight = if (showFlavorText) {
         Modifier.wrapContentHeight()

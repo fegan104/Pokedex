@@ -70,27 +70,29 @@ VALUES(?, ?, ?, ?);
 selectMovesByPokemonId:
 SELECT *
  FROM pokemonToMove
-LEFT OUTER JOIN pokemonMove
+JOIN pokemonMove
  ON pokemonToMove.pokemonId = :pokemonId
  AND pokemonToMove.moveId = pokemonMove.id
-LEFT OUTER JOIN moveFlavorText
+JOIN moveFlavorText
  ON pokemonMove.id = moveFlavorText.moveId
-LEFT OUTER JOIN moveName
+JOIN moveName
  ON pokemonMove.id = moveName.moveId
-WHERE moveName.languageName = moveFlavorText.languageName;
+WHERE moveName.languageName = moveFlavorText.languageName
+ AND moveName.languageName = "en";
 
 selectMovesByMoveId:
 SELECT *
  FROM pokemonToMove
-LEFT OUTER JOIN pokemonMove
+JOIN pokemonMove
  ON pokemonToMove.pokemonId = :pokemonId
  AND pokemonToMove.moveId = pokemonMove.id
-LEFT OUTER JOIN moveFlavorText
+JOIN moveFlavorText
  ON pokemonMove.id = moveFlavorText.moveId
-LEFT OUTER JOIN moveName
+JOIN moveName
  ON pokemonMove.id = moveName.moveId
 WHERE moveName.languageName = moveFlavorText.languageName
-AND pokemonToMove.moveId IN :moveIds;
+ AND moveName.languageName = "en"
+ AND pokemonToMove.moveId IN :moveIds;
 
 selectPokemonMoves:
 SELECT moveName, moveUrl FROM pokemonToMove

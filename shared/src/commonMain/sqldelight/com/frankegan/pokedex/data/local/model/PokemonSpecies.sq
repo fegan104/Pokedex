@@ -63,11 +63,11 @@ INSERT OR REPLACE INTO pokemonSpeciesDisplayName(
 VALUES (?, ?, ?, ?);
 
 selectSpeciesByPokemonId:
-SELECT *
-FROM pokemonSpecies AS species
-LEFT OUTER JOIN pokemonSpeciesFlavorText AS flavorText
+SELECT * FROM pokemonSpecies AS species
+JOIN pokemonSpeciesFlavorText AS flavorText
  ON flavorText.pokemonSpeciesId = species.id
  AND species.id = :pokemonId
-LEFT OUTER JOIN pokemonSpeciesDisplayName AS displayNames
+JOIN pokemonSpeciesDisplayName AS displayNames
  ON species.id = displayNames.pokemonSpeciesId
-WHERE displayNames.languageName = flavorText.languageName;
+WHERE displayNames.languageName = flavorText.languageName
+ AND displayNames.languageName = "en";

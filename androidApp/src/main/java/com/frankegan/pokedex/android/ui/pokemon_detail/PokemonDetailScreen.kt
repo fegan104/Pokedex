@@ -117,7 +117,7 @@ private fun PokemonDetailContent(
 
                 Text(
                     text = species.displayNames
-                        .first { it.language.name == "en" }
+                        .first()
                         .displayName
                         .replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.h3,
@@ -128,7 +128,7 @@ private fun PokemonDetailContent(
 
                 Text(
                     text = species.flavorTextEntries
-                        .first { it.language.name == "en" }
+                        .first()
                         .flavorText
                         .replace("[\\t\\n\\f]+".toRegex(), " "),
                     textAlign = TextAlign.Center,
