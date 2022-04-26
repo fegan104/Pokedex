@@ -6,6 +6,7 @@ import com.frankegan.pokedex.di.initKoin
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.component.KoinComponent
+import org.koin.core.logger.Level
 
 class PokedexApplication: Application(), KoinComponent {
 
@@ -13,7 +14,7 @@ class PokedexApplication: Application(), KoinComponent {
         super.onCreate()
 
         initKoin {
-            androidLogger()
+            androidLogger(Level.ERROR)
             androidContext(this@PokedexApplication)
             modules(appModule)
         }

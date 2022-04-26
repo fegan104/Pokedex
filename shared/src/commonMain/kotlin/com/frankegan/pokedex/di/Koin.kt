@@ -3,9 +3,9 @@ package com.frankegan.pokedex.di
 import com.frankegan.pokedex.data.PokemonRepository
 import com.frankegan.pokedex.data.local.PokemonLocalDataSource
 import com.frankegan.pokedex.data.remote.PokemonRemoteDataSource
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.plugins.contentnegotiation.*
 import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
@@ -22,9 +22,8 @@ fun initKoin() = initKoin {}
 val commonModule = module {
     single {
         HttpClient {
-            install(JsonFeature) {
-                val json = Json { ignoreUnknownKeys = true }
-                serializer = KotlinxSerializer(json)
+            install(ContentNegotiation) {
+                json(Json { ignoreUnknownKeys = true })
             }
         }
     }

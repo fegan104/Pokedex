@@ -3,16 +3,17 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
+    id("kotlinx-serialization")
     id("com.android.library")
     id("com.squareup.sqldelight")
 }
 
 version = "1.0"
 
-val coroutinesVersion = "1.4.2-native-mt"
+val coroutinesVersion = "1.6.1"
 val serializationVersion = "1.0.0-RC"
-val ktorVersion = "1.4.0"
-val koinVersion = "3.0.2"
+val ktorVersion = "2.0.0"
+val koinVersion = "3.1.6"
 val sqlDelightVersion: String by project
 
 kotlin {
@@ -37,10 +38,11 @@ kotlin {
             dependencies {
                 implementation("com.squareup.sqldelight:runtime:$sqlDelightVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationVersion")
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 implementation("io.insert-koin:koin-core:$koinVersion")
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             }
         }
         val commonTest by getting {
@@ -83,11 +85,11 @@ kotlin {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 31
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 31
     }
 }
 

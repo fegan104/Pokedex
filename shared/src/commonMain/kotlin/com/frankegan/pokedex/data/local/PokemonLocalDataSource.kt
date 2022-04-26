@@ -96,7 +96,7 @@ class PokemonLocalDataSource(
                     name = name,
                     displayNames = listOf(
                         SpeciesName(
-                            NamedApiResource(languageName!!, languageUrl!!),
+                            NamedApiResource(languageName, languageUrl),
                             displayName!!
                         )
                     ),

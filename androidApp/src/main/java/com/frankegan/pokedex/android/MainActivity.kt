@@ -10,8 +10,8 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.frankegan.pokedex.android.ui.NavRoute
 import com.frankegan.pokedex.android.ui.home.HomeScreen
