@@ -12,7 +12,7 @@ import org.koin.core.component.inject
 class PokemonRepository(
     private val remote: PokemonRemoteDataSource,
     private val local: PokemonLocalDataSource
-) : PokemonDataSource, KoinComponent {
+) : PokemonDataSource {
 
     override suspend fun getPokemonPage(page: Int): List<Pokemon> {
         return runCatching { local.getPokemonPage(page) }.recoverCatching {

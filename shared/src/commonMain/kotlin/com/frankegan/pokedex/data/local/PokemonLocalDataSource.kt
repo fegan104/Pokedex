@@ -97,16 +97,16 @@ class PokemonLocalDataSource(
                     displayNames = listOf(
                         SpeciesName(
                             NamedApiResource(languageName, languageUrl),
-                            displayName!!
+                            displayName
                         )
                     ),
                     color = NamedApiResource(colorName, colorUrl),
                     generation = NamedApiResource(generationName, generationUrl),
                     flavorTextEntries = listOf(
                         PokemonSpeciesFlavorText(
-                            flavorText!!,
+                            flavorText,
                             language = NamedApiResource(languageName, languageUrl),
-                            version = NamedApiResource(versionName!!, versionUrl!!)
+                            version = NamedApiResource(versionName, versionUrl)
                         )
                     )
                 )
@@ -234,23 +234,23 @@ class PokemonLocalDataSource(
                             displayNames = emptyList(),
                             accuracy = it.accuracy,
                             pp = it.pp,
-                            priority = it.priority!!,
+                            priority = it.priority,
                             power = it.power,
                             damageClass = NamedApiResource(
-                                it.damageClassName!!,
-                                it.damageClassUrl!!
+                                it.damageClassName,
+                                it.damageClassUrl
                             ),
                             flavorTextEntries = emptyList(),
-                            type = TypeResource(it.typeName!!, it.typeUrl!!)
+                            type = TypeResource(it.typeName, it.typeUrl)
                         )
                     },
                     valueTransform = {
                         MoveFlavorText(
-                            it.flavorText!!,
-                            NamedApiResource(it.languageName!!, it.languageUrl!!)
+                            it.flavorText,
+                            NamedApiResource(it.languageName, it.languageUrl)
                         ) to MoveName(
                             language = NamedApiResource(it.languageName, it.languageName),
-                            displayName = it.displayName!!
+                            displayName = it.displayName
                         )
                     })
                 .map { moveToFlavorText ->
