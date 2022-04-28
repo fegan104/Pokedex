@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
-    @StateObject var viewModel = HomeViewModel(pokemonRepo: PokemonRepository())
+    @StateObject var viewModel = HomeViewModel(pokemonRepo: KotlinDependencies.shared.getPokemonRepository())
     
     var body: some View {
         NavigationView {
