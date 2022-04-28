@@ -44,39 +44,43 @@ extension ContentView {
         
         private func loadMoreContent() {
             guard !isLoadingPage else {
-              return
+                return
             }
-
+            
             isLoadingPage = true
-
+            
             pokemonRepo.getPokemonPage(page: Int32(currentPage)) { pokemon, error in
-                self.isLoadingPage = false
+                DispatchQueue.main.async {
+                    self.isLoadingPage = false
+                }
                 self.currentPage += 1
                 
                 if (pokemon != nil) {
-                    self.pokemonResult = self.pokemonResult.map { currentPokemon in
-                        currentPokemon + pokemon!
+                    DispatchQueue.main.async {
+                        self.pokemonResult = self.pokemonResult.map { currentPokemon in
+                            currentPokemon + pokemon!
+                        }
                     }
                 } else {
                     print(error?.localizedDescription ?? "error")
                     self.pokemonResult = .failure(error ?? NSError(domain: "No data found", code: 404, userInfo: nil))
                 }
             }
-          }
+        }
         
         func loadMoreContentIfNeeded(currentItem item: Pokemon?) {
             guard let item = item else {
-              loadMoreContent()
-              return
+                loadMoreContent()
+                return
             }
-
-            pokemonResult.map { data  in
+            
+            _ = pokemonResult.map { data  in
                 let thresholdIndex = data.index(data.endIndex, offsetBy: -5)
                 if data.firstIndex(where: { $0.id == item.id }) == thresholdIndex {
-                  loadMoreContent()
+                    loadMoreContent()
                 }
             }
-          }
+        }
         
         private func loadPokemon(page: Int) {
             
