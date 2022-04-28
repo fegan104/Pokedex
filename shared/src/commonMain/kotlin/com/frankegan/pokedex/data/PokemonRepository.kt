@@ -9,10 +9,10 @@ import com.frankegan.pokedex.model.PokemonSpecies
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class PokemonRepository : PokemonDataSource, KoinComponent {
-
-    private val remote: PokemonRemoteDataSource by inject()
-    private val local: PokemonLocalDataSource by inject()
+class PokemonRepository(
+    private val remote: PokemonRemoteDataSource,
+    private val local: PokemonLocalDataSource
+) : PokemonDataSource, KoinComponent {
 
     override suspend fun getPokemonPage(page: Int): List<Pokemon> {
         return runCatching { local.getPokemonPage(page) }.recoverCatching {

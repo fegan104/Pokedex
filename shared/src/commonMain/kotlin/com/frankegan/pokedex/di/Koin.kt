@@ -16,7 +16,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     modules(commonModule, platformModule())
 }
 
-// called by iOS etc
+@Suppress("unused") // Called from Swift
 fun initKoin() = initKoin {}
 
 val commonModule = module {
@@ -29,5 +29,5 @@ val commonModule = module {
     }
     single { PokemonLocalDataSource(get()) }
     single { PokemonRemoteDataSource(get()) }
-    single { PokemonRepository() }
+    single { PokemonRepository(get(), get()) }
 }
